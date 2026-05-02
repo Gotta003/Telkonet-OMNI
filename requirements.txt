@@ -1,0 +1,5 @@
+ttkbootstrap
+customtkinter
+numpy
+pandas
+matplotlib
