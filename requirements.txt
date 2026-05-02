@@ -3,3 +3,6 @@ customtkinter
 numpy
 pandas
 matplotlib
+markdown
+ipykernel
+pyserial

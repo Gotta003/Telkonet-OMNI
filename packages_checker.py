@@ -5,6 +5,9 @@ checks={
     "numpy": lambda: __import__("numpy").__version__,
     "pandas": lambda: __import__("pandas").__version__,
     "matplotlib": lambda: __import__("matplotlib").__version__,
+    "markdown": lambda: __import__("markdown").__version__,
+    "ipykernel": lambda: __import__("ipykernel").__version__,
+    "serial": lambda: __import__("serial").__version__,
 }
 
 GREEN="\033[0;32m"
