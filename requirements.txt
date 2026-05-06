@@ -6,3 +6,4 @@ matplotlib
 markdown
 ipykernel
 pyserial
+flask

@@ -8,6 +8,7 @@ checks={
     "markdown": lambda: __import__("markdown").__version__,
     "ipykernel": lambda: __import__("ipykernel").__version__,
     "serial": lambda: __import__("serial").__version__,
+    "flask": lambda: __import__("flask").__version__
 }
 
 GREEN="\033[0;32m"
