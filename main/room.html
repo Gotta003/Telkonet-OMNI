@@ -3,295 +3,243 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS LIGHT - Elite Smart Hospitality</title>
+    <title>NEXUS LIGHT OS - High Visibility Mode</title>
     <style>
-        /* RESET E IMPOSTAZIONI BASE */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'DejaVu Sans', 'Segoe UI', Tahoma, sans-serif;
+        :root {
+            --bg-main: #f1f5f9;
+            --bg-sidebar: #ffffff;
+            --fg-text: #1e293b;
+            --topbar-bg: #1e293b;
+            --topbar-fg: #f8fafc;
+            --border-color: #cbd5e1;
+            --card-border: #e2e8f0;
+            --slider-trough: #e2e8f0;
         }
 
+        body.dark-mode {
+            --bg-main: #0f172a;
+            --bg-sidebar: #1e293b;
+            --fg-text: #f8fafc;
+            --border-color: #334155;
+            --card-border: #334155;
+            --slider-trough: #334155;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica', Arial, sans-serif; }
+
         body {
-            background-color: #f8fafc;
+            background-color: var(--bg-main);
+            color: var(--fg-text);
             height: 100vh;
             display: flex;
             flex-direction: column;
-            overflow: hidden; /* Impedisce scroll globale */
+            overflow: hidden;
+            transition: background-color 0.3s;
         }
 
-        /* HEADER - Altezza fissa 100px come da codice Python */
-        .top-bar {
-            height: 100px;
-            background: #ffffff;
+        header {
+            height: 70px;
+            background-color: var(--topbar-bg);
+            color: var(--topbar-fg);
             display: flex;
             align-items: center;
-            padding: 0 40px;
-            border-bottom: 1px solid #e2e8f0;
-            flex-shrink: 0;
+            justify-content: space-between;
+            padding: 0 30px;
+            z-index: 10;
         }
 
-        .top-bar h1 {
-            font-size: 32px;
-            color: #1e293b;
+        header h1 { font-size: 22px; font-weight: bold; }
+
+        .toggle-btn {
+            background-color: #334155;
+            color: white;
+            border: none;
+            padding: 8px 20px;
             font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 10px;
         }
 
-        /* LAYOUT PRINCIPALE */
-        .main-container {
+        main {
             display: flex;
-            flex: 1; /* Occupa tutto lo spazio rimanente sotto l'header */
-            height: calc(100vh - 100px);
+            flex: 1;
+            overflow: hidden;
         }
 
-        /* PANNELLO SINISTRO (75%) - Griglia Stanze */
         .left-panel {
-            width: 75%;
+            flex: 0.68;
+            position: relative;
             padding: 20px;
-            display: flex;
-            flex-direction: column;
         }
 
-        .rooms-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr; /* 2 Colonne */
-            grid-template-rows: repeat(3, 1fr); /* 3 Righe per riempimento totale */
-            gap: 20px;
+        .blueprint-container {
+            position: relative;
+            width: 100%;
             height: 100%;
         }
 
-        .room-card {
-            border: 3px solid #cbd5e1;
-            border-radius: 4px;
+        .room {
+            position: absolute;
+            border: 3px solid var(--fg-text);
             display: flex;
             flex-direction: column;
+            padding: 10px;
+            transition: all 0.3s;
+            z-index: 1;
+        }
+
+        .room-title {
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            pointer-events: none;
+        }
+
+        .device-icons {
+            display: flex;
             justify-content: space-around;
             align-items: center;
-            padding: 20px;
-            background-color: #ffffff;
+            height: 100%;
         }
 
-        .room-card h2 {
-            font-size: 24px;
-            font-weight: bold;
-            text-align: center;
+        /* STILE PORTE */
+        .door {
+            position: absolute;
+            background: #94a3b8;
+            border: 1px solid #1e293b;
+            z-index: 5; /* Sopra le stanze */
         }
 
-        .room-icons {
-            display: flex;
-            gap: 30px;
+        body.dark-mode .door {
+            background: #475569;
+            border-color: #94a3b8;
         }
 
-        .icon-orb {
-            width: 80px;
-            height: 80px;
-            background: white;
-            border: 2px solid #e2e8f0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        /* PANNELLO DESTRO (25%) - Quick Controls */
         .right-panel {
-            width: 25%;
-            background: #ffffff;
-            border-left: 1px solid #e2e8f0;
+            flex: 0.32;
+            background-color: var(--bg-sidebar);
+            border-left: 1px solid var(--border-color);
             display: flex;
             flex-direction: column;
-            box-shadow: -2px 0 10px rgba(0,0,0,0.02);
         }
 
-        .sidebar-header {
-            padding: 30px 20px;
+        .sidebar-title {
+            padding: 25px;
+            font-size: 16px;
+            font-weight: bold;
             text-align: center;
-            flex-shrink: 0;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .sidebar-header h3 {
-            font-size: 22px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        /* AREA SCROLLABLE (Pannello Quick Controls) */
-        .scrollable-content {
+        .scroll-area {
             flex: 1;
             overflow-y: auto;
-            padding: 10px; /* Margine minimo per evitare spazi bianchi eccessivi */
+            padding: 10px 20px;
         }
 
-        /* CARD SIDEBAR - Ottimizzate per larghezza totale */
-        .sidebar-card {
-            background: #ffffff;
-            border: 2px solid #f1f5f9;
-            padding: 25px 15px;
-            margin-bottom: 12px;
-            border-radius: 8px;
-            display: flex;
-            flex-direction: column;
-            width: 100%; /* Forza la card a riempire tutto il pannello */
-        }
-
-        .card-head {
-            display: flex;
-            align-items: center;
+        .card {
+            background-color: var(--bg-sidebar);
+            border: 1px solid var(--card-border);
+            padding: 15px;
             margin-bottom: 15px;
+            border-radius: 4px;
         }
 
-        .emoji {
-            font-size: 32px;
-            margin-right: 15px;
-        }
-
-        .label {
+        .card-label {
+            font-size: 12px;
             font-weight: bold;
-            font-size: 14px;
-            color: #1e293b;
-            line-height: 1.2;
+            margin-bottom: 10px;
+            display: block;
         }
 
-        /* SLIDER (STILE NEXUS .TScale) */
-        .nexus-slider {
-            -webkit-appearance: none;
+        input[type="range"] {
             width: 100%;
-            height: 45px; /* Spessore slider Python */
-            background: #e2e8f0;
-            outline: none;
-            border-radius: 4px;
             cursor: pointer;
+            accent-color: #1e293b;
         }
 
-        /* Cursore slider (Thumb) */
-        .nexus-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 45px;
-            height: 45px;
-            background: #94a3b8;
-            border-radius: 4px;
-            border: none;
-        }
+        /* Posizioni Stanze */
+        #bedroom1 { left: 5%;  top: 5%;  width: 30%; height: 35%; background-color: #eff6ff; }
+        #bedroom2 { left: 35%; top: 5%;  width: 25%; height: 35%; background-color: #eff6ff; }
+        #bath1    { left: 5%;  top: 40%; width: 15%; height: 20%; background-color: #f0f9ff; }
+        #utility  { left: 5%;  top: 60%; width: 20%; height: 30%; background-color: #f8fafc; }
+        #hall     { left: 20%; top: 40%; width: 30%; height: 20%; background-color: #ffffff; }
+        #bath2    { left: 25%; top: 60%; width: 25%; height: 30%; background-color: #f0f9ff; }
+        #living   { left: 60%; top: 5%;  width: 35%; height: 45%; background-color: #faf5ff; }
+        #kitchen  { left: 60%; top: 50%; width: 35%; height: 40%; background-color: #fff7ed; }
+        #entry    { left: 50%; top: 40%; width: 10%; height: 30%; background-color: #f1f5f9; }
 
-        .nexus-slider::-moz-range-thumb {
-            width: 45px;
-            height: 45px;
-            background: #94a3b8;
-            border-radius: 4px;
-            border: none;
-        }
+        body.dark-mode #bedroom1, body.dark-mode #bedroom2, body.dark-mode #hall { background-color: #1e293b; }
+        body.dark-mode #bath1, body.dark-mode #bath2 { background-color: #0f172a; }
+        body.dark-mode #utility, body.dark-mode #entry { background-color: #334155; }
+        body.dark-mode #living { background-color: #1e1b4b; }
+        body.dark-mode #kitchen { background-color: #431407; }
 
-        /* Scrollbar personalizzata (opzionale, per stile pulito) */
-        .scrollable-content::-webkit-scrollbar {
-            width: 6px;
-        }
-        .scrollable-content::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 10px;
-        }
     </style>
 </head>
 <body>
 
-    <header class="top-bar">
-        <h1>GRAND IMPERIAL SUITE</h1>
-    </header>
+<header>
+    <h1>NEXUS LIGHT | DASHBOARD</h1>
+    <button class="toggle-btn" onclick="toggleTheme()">🌓 TOGGLE MODE</button>
+</header>
 
-    <main class="main-container">
-        <section class="left-panel">
-            <div class="rooms-grid">
-                <div class="room-card" style="background-color: #eff6ff; border-color: #2563eb;">
-                    <h2 style="color: #2563eb;">MASTER SUITE</h2>
-                    <div class="room-icons">
-                        <div class="icon-orb">💡</div>
-                        <div class="icon-orb">🌡️</div>
-                        <div class="icon-orb">🎵</div>
-                    </div>
-                </div>
+<main>
+    <div class="left-panel">
+        <div class="blueprint-container" id="blueprint">
+            <!-- Stanze -->
+            <div class="room" id="bedroom1"><span class="room-title">BEDROOM 1</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="bedroom2"><span class="room-title">BEDROOM 2</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="bath1"><span class="room-title">BATH 1</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="utility"><span class="room-title">UTILITY</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="hall"><span class="room-title">HALL</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="bath2"><span class="room-title">BATH 2</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="living"><span class="room-title">LIVING</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="kitchen"><span class="room-title">KITCHEN</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+            <div class="room" id="entry"><span class="room-title">ENTRY</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
 
-                <div class="room-card" style="background-color: #f0fdf4; border-color: #16a34a;">
-                    <h2 style="color: #16a34a;">GUEST ROOM A</h2>
-                    <div class="room-icons">
-                        <div class="icon-orb">💡</div>
-                        <div class="icon-orb">🌡️</div>
-                        <div class="icon-orb">🎵</div>
-                    </div>
-                </div>
+            <!-- PORTE (Inserite qui per funzionare correttamente) -->
+            <div class="door" style="left: 33.5%; top: 15%; width: 3%; height: 10%;"></div> <!-- Bed1 -> Bed2 -->
+            <div class="door" style="left: 58.5%; top: 15%; width: 3%; height: 10%;"></div> <!-- Bed2 -> Living -->
+            <div class="door" style="left: 58.5%; top: 70%; width: 3%; height: 10%;"></div> <!-- Entry -> Kitchen -->
+            <div class="door" style="left: 10%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Bed1 -> Bath1 -->
+            <div class="door" style="left: 25%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Bed1 -> Hall -->
+            <div class="door" style="left: 40%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Bed2 -> Hall -->
+            <div class="door" style="left: 10%; top: 58.5%; width: 8%; height: 3%;"></div> <!-- Bath1 -> Utility -->
+            <div class="door" style="left: 30%; top: 58.5%; width: 8%; height: 3%;"></div> <!-- Hall -> Bath2 -->
+            <div class="door" style="left: 75%; top: 48.5%; width: 8%; height: 3%;"></div> <!-- Living -> Kitchen -->
+            <div class="door" style="left: 51%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Hall -> Entry -->
+        </div>
+    </div>
 
-                <div class="room-card" style="background-color: #fffbeb; border-color: #d97706;">
-                    <h2 style="color: #d97706;">GUEST ROOM B</h2>
-                    <div class="room-icons">
-                        <div class="icon-orb">💡</div>
-                        <div class="icon-orb) ">🌡️</div>
-                        <div class="icon-orb">🎵</div>
-                    </div>
-                </div>
+    <div class="right-panel">
+        <div class="sidebar-title">PARAMETERS</div>
+        <div class="scroll-area" id="sidebar-content"></div>
+    </div>
+</main>
 
-                <div class="room-card" style="background-color: #faf5ff; border-color: #9333ea;">
-                    <h2 style="color: #9333ea;">ROYAL LOUNGE</h2>
-                    <div class="room-icons">
-                        <div class="icon-orb">💡</div>
-                        <div class="icon-orb">🌡️</div>
-                        <div class="icon-orb">🎵</div>
-                    </div>
-                </div>
+<script>
+    const rooms = ["BEDROOM 1", "BEDROOM 2", "BATH 1", "UTILITY", "HALL", "BATH 2", "LIVING", "KITCHEN", "ENTRY"];
+    const icons = [ {s: "💡", n: "Light"}, {s: "🌡️", n: "Temp"}, {s: "🎵", n: "Audio"}, {s: "🪟", n: "Shade"} ];
+    
+    const sidebar = document.getElementById('sidebar-content');
+    rooms.forEach(room => {
+        icons.forEach(icon => {
+            const card = document.createElement('div');
+            card.className = 'card';
+            card.innerHTML = `
+                <span class="card-label">${icon.s} ${room}</span>
+                <input type="range" min="0" max="100" value="50">
+            `;
+            sidebar.appendChild(card);
+        });
+    });
 
-                <div class="room-card" style="background-color: #f1f5f9; border-color: #475569;">
-                    <h2 style="color: #475569;">DINING & KITCHEN</h2>
-                    <div class="room-icons">
-                        <div class="icon-orb">💡</div>
-                        <div class="icon-orb">🌡️</div>
-                        <div class="icon-orb">🎵</div>
-                    </div>
-                </div>
-                </div>
-        </section>
-
-        <aside class="right-panel">
-            <div class="sidebar-header">
-                <h3>QUICK CONTROLS</h3>
-            </div>
-            <div class="scrollable-content">
-                <div class="sidebar-card">
-                    <div class="card-head">
-                        <span class="emoji">💡</span>
-                        <span class="label">MASTER SUITE<br>Lights Control</span>
-                    </div>
-                    <input type="range" class="nexus-slider" min="0" max="100" value="70">
-                </div>
-
-                <div class="sidebar-card">
-                    <div class="card-head">
-                        <span class="emoji">🌡️</span>
-                        <span class="label">MASTER SUITE<br>Climate Control</span>
-                    </div>
-                    <input type="range" class="nexus-slider" min="0" max="100" value="22">
-                </div>
-
-                <div class="sidebar-card">
-                    <div class="card-head">
-                        <span class="emoji">🎵</span>
-                        <span class="label">MASTER SUITE<br>Audio System</span>
-                    </div>
-                    <input type="range" class="nexus-slider" min="0" max="100" value="50">
-                </div>
-
-                <div class="sidebar-card">
-                    <div class="card-head">
-                        <span class="emoji">💡</span>
-                        <span class="label">GUEST ROOM A<br>Lights Control</span>
-                    </div>
-                    <input type="range" class="nexus-slider" min="0" max="100" value="30">
-                </div>
-                
-                </div>
-        </aside>
-    </main>
+    function toggleTheme() {
+        document.body.classList.toggle('dark-mode');
+    }
+</script>
 
 </body>
 </html>

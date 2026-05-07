@@ -1,168 +1,177 @@
 import tkinter as tk
 from tkinter import ttk
-import math
 
 class NexusLightOS:
     def __init__(self, root):
         self.root = root
-        self.root.title("NEXUS LIGHT - Elite Smart Hospitality")
+        self.root.title("NEXUS LIGHT OS - High Visibility Mode")
+        self.dark_mode = False
         
         try:
             self.root.attributes('-zoomed', True)
         except:
             self.root.state('zoomed')
             
-        self.root.configure(bg="#f8fafc") 
+        self.bg_main = "#f1f5f9"
+        self.bg_sidebar = "#ffffff"
+        self.fg_text = "#1e293b"
+        self.root.configure(bg=self.bg_main) 
 
         self.device_states = {}
         self.sidebar_widgets = {} 
-        self.current_overlay = None
         
-        self.rooms_data = [
-            ("MASTER SUITE", "#eff6ff", "#2563eb"),   
-            ("GUEST ROOM A", "#f0fdf4", "#16a34a"),  
-            ("GUEST ROOM B", "#fffbeb", "#d97706"), 
-            ("ROYAL LOUNGE", "#faf5ff", "#9333ea"),  
-            ("DINING & KITCHEN", "#f1f5f9", "#475569"), 
-        ]
+        self.blueprint_data = {
+            "BEDROOM 1": {"rect": (0.05, 0.05, 0.30, 0.35), "color": "#eff6ff", "dark_color": "#1e293b"},
+            "BEDROOM 2": {"rect": (0.35, 0.05, 0.25, 0.35), "color": "#eff6ff", "dark_color": "#1e293b"},
+            "BATH 1":    {"rect": (0.05, 0.40, 0.15, 0.20), "color": "#f0f9ff", "dark_color": "#0f172a"},
+            "UTILITY":   {"rect": (0.05, 0.60, 0.20, 0.30), "color": "#f8fafc", "dark_color": "#334155"},
+            "HALL":      {"rect": (0.20, 0.40, 0.30, 0.20), "color": "#ffffff", "dark_color": "#1e293b"},
+            "BATH 2":    {"rect": (0.25, 0.60, 0.25, 0.30), "color": "#f0f9ff", "dark_color": "#0f172a"},
+            "LIVING":    {"rect": (0.60, 0.05, 0.35, 0.45), "color": "#faf5ff", "dark_color": "#1e1b4b"},
+            "KITCHEN":   {"rect": (0.60, 0.50, 0.35, 0.40), "color": "#fff7ed", "dark_color": "#431407"},
+            "ENTRY":     {"rect": (0.50, 0.40, 0.10, 0.30), "color": "#f1f5f9", "dark_color": "#334155"},
+        }
 
         self.setup_styles()
         self.create_layout()
 
     def setup_styles(self):
-        style = ttk.Style()
-        style.theme_use('clam')
-        style.configure("Nexus.Horizontal.TScale", 
-                        background="#ffffff", 
-                        troughcolor="#e2e8f0", 
-                        sliderthickness=45, 
-                        borderwidth=0)
+        self.style = ttk.Style()
+        self.style.theme_use('clam')
+        self.style.configure("Nexus.Horizontal.TScale", background="#ffffff", troughcolor="#e2e8f0", sliderthickness=25)
+
+    def toggle_theme(self):
+        self.dark_mode = not self.dark_mode
+        # Definisci i colori base
+        self.bg_main = "#0f172a" if self.dark_mode else "#f1f5f9"
+        self.bg_sidebar = "#1e293b" if self.dark_mode else "#ffffff"
+        self.fg_text = "#f8fafc" if self.dark_mode else "#1e293b"
+        
+        # Applica ai container
+        self.root.configure(bg=self.bg_main)
+        self.main_container.configure(bg=self.bg_main)
+        self.left_panel.configure(bg=self.bg_main)
+        self.canvas.configure(bg=self.bg_main)
+        self.right_panel.configure(bg=self.bg_sidebar, highlightbackground="#334155" if self.dark_mode else "#cbd5e1")
+        self.side_canvas.configure(bg=self.bg_sidebar)
+        self.scrollable_frame.configure(bg=self.bg_sidebar)
+        self.sidebar_title.configure(bg=self.bg_sidebar, fg=self.fg_text)
+        
+        # Aggiorna widget sidebar
+        for dev_id, card in self.sidebar_widgets.items():
+            card.configure(bg=self.bg_sidebar, highlightbackground="#334155" if self.dark_mode else "#e2e8f0")
+            for child in card.winfo_children():
+                if isinstance(child, tk.Label):
+                    child.configure(bg=self.bg_sidebar, fg=self.fg_text)
+        
+        self.draw_blueprint()
 
     def create_layout(self):
-        # Header
-        self.top_bar = tk.Frame(self.root, bg="#ffffff", height=100)
+        self.top_bar = tk.Frame(self.root, bg="#1e293b", height=70)
         self.top_bar.pack(fill="x", side="top")
-        self.top_bar.pack_propagate(False)
-        tk.Label(self.top_bar, text="GRAND IMPERIAL SUITE", 
-                 font=("DejaVu Sans", 32, "bold"), fg="#1e293b", bg="#ffffff").pack(side="left", padx=40)
+        
+        tk.Label(self.top_bar, text="NEXUS LIGHT | DASHBOARD", font=("Helvetica", 22, "bold"), fg="#f8fafc", bg="#1e293b").pack(side="left", padx=30)
+        
+        # Bottone Toggle Theme
+        tk.Button(self.top_bar, text="🌓 TOGGLE MODE", font=("Helvetica", 10, "bold"), 
+                  command=self.toggle_theme, bg="#334155", fg="white", bd=0, padx=20, pady=5, cursor="hand2").pack(side="right", padx=30)
 
-        self.main_container = tk.Frame(self.root, bg="#f8fafc")
+        self.main_container = tk.Frame(self.root, bg=self.bg_main)
         self.main_container.pack(fill="both", expand=True)
 
-        self.left_panel = tk.Frame(self.main_container, bg="#f8fafc")
-        self.left_panel.place(relx=0, rely=0, relwidth=0.75, relheight=1)
+        self.left_panel = tk.Frame(self.main_container, bg=self.bg_main)
+        self.left_panel.place(relx=0, rely=0, relwidth=0.68, relheight=1)
 
-        self.right_panel = tk.Frame(self.main_container, bg="#ffffff", highlightbackground="#e2e8f0", highlightthickness=1)
-        self.right_panel.place(relx=0.75, rely=0, relwidth=0.25, relheight=1)
+        self.right_panel = tk.Frame(self.main_container, bg=self.bg_sidebar, highlightthickness=1, highlightbackground="#cbd5e1")
+        self.right_panel.place(relx=0.68, rely=0, relwidth=0.32, relheight=1)
 
-        self.setup_sidebar()
+        self.sidebar_title = tk.Label(self.right_panel, text="PARAMETERS", font=("Helvetica", 16, "bold"), bg=self.bg_sidebar, fg=self.fg_text, pady=25)
+        self.sidebar_title.pack(fill="x")
         
-        self.canvas = tk.Canvas(self.left_panel, bg="#f8fafc", highlightthickness=0)
-        self.canvas.pack(fill="both", expand=True, padx=20, pady=20)
-        self.canvas.bind("<Configure>", lambda e: self.draw_master_plan())
-
-    def setup_sidebar(self):
-        tk.Label(self.right_panel, text="QUICK CONTROLS", font=("DejaVu Sans", 22, "bold"), 
-                 bg="#ffffff", fg="#0f172a", pady=30).pack()
-
-        self.side_canvas = tk.Canvas(self.right_panel, bg="#ffffff", highlightthickness=0)
-        scrollbar = ttk.Scrollbar(self.right_panel, orient="vertical", command=self.side_canvas.yview)
-        self.scrollable_frame = tk.Frame(self.side_canvas, bg="#ffffff")
-
-        # MODIFICA: La finestra interna ora si adatta alla larghezza del canvas per coprire tutto lo spazio
-        self.side_canvas_window = self.side_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.side_canvas = tk.Canvas(self.right_panel, bg=self.bg_sidebar, highlightthickness=0)
+        self.scrollbar = ttk.Scrollbar(self.right_panel, orient="vertical", command=self.side_canvas.yview)
+        self.scrollable_frame = tk.Frame(self.side_canvas, bg=self.bg_sidebar)
         
-        def configure_scroll_region(e):
-            self.side_canvas.configure(scrollregion=self.side_canvas.bbox("all"))
-            # Forza la scrollable_frame a essere larga quanto il canvas
-            self.side_canvas.itemconfig(self.side_canvas_window, width=e.width)
-
-        self.side_canvas.bind("<Configure>", configure_scroll_region)
-        self.side_canvas.configure(yscrollcommand=scrollbar.set)
+        self.side_canvas_frame = self.side_canvas.create_window((0, 0), window=self.scrollable_frame, anchor="nw")
+        self.side_canvas.configure(yscrollcommand=self.scrollbar.set)
+        self.side_canvas.bind("<Configure>", lambda e: self.side_canvas.itemconfig(self.side_canvas_frame, width=e.width))
         
         self.side_canvas.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        self.scrollbar.pack(side="right", fill="y")
 
-    def draw_master_plan(self):
+        self.canvas = tk.Canvas(self.left_panel, bg=self.bg_main, highlightthickness=0)
+        self.canvas.pack(fill="both", expand=True, padx=20, pady=20)
+        self.canvas.bind("<Configure>", lambda e: self.draw_blueprint())
+
+    def draw_door(self, x, y, size=40, type="H", flip=False):
+        color = "#94a3b8" if self.dark_mode else "#475569"
+        bg_color = self.bg_main 
+        
+        if type == "H":
+            self.canvas.create_line(x, y, x + size, y, fill=bg_color, width=5)
+            if not flip:
+                self.canvas.create_line(x, y, x, y - size, fill=color, width=2)
+                self.canvas.create_arc(x - size, y - size, x + size, y + size, start=90, extent=-90, style="arc", outline=color)
+            else:
+                self.canvas.create_line(x, y, x, y + size, fill=color, width=2)
+                self.canvas.create_arc(x - size, y - size, x + size, y + size, start=270, extent=90, style="arc", outline=color)
+        else:
+            self.canvas.create_line(x, y, x, y + size, fill=bg_color, width=5)
+            if not flip:
+                self.canvas.create_line(x, y, x + size, y, fill=color, width=2)
+                self.canvas.create_arc(x - size, y - size, x + size, y + size, start=0, extent=-90, style="arc", outline=color)
+            else:
+                self.canvas.create_line(x, y, x - size, y, fill=color, width=2)
+                self.canvas.create_arc(x - size, y - size, x + size, y + size, start=180, extent=90, style="arc", outline=color)
+
+    def add_to_sidebar(self, room_name, dev_id, icon):
+        if dev_id in self.sidebar_widgets: return
+        card = tk.Frame(self.scrollable_frame, bg=self.bg_sidebar, highlightthickness=1, highlightbackground="#e2e8f0", pady=15)
+        card.pack(fill="x", padx=20, pady=8)
+        lbl_top = tk.Label(card, text=f"{icon} {room_name}", font=("Helvetica", 12, "bold"), bg=self.bg_sidebar, fg=self.fg_text, anchor="w")
+        lbl_top.pack(fill="x", padx=15)
+        scale = ttk.Scale(card, from_=0, to=100, variable=self.device_states[dev_id], style="Nexus.Horizontal.TScale")
+        scale.pack(fill="x", padx=15, pady=10)
+        self.sidebar_widgets[dev_id] = card
+
+    def draw_blueprint(self):
         self.canvas.delete("all")
         w, h = self.canvas.winfo_width(), self.canvas.winfo_height()
         if w < 100: return 
 
-        cols = 2
-        rows = math.ceil(len(self.rooms_data) / cols) 
-        gap = 20 
-        
-        card_w = (w - (gap * (cols + 1))) / cols
-        card_h = (h - (gap * (rows + 1))) / rows
+        device_types = [("💡", 0.2), ("🌡️", 0.4), ("🎵", 0.6), ("🪟", 0.8)]
 
-        for i, (name, color, accent) in enumerate(self.rooms_data):
-            row, col = i // cols, i % cols
-            x1, y1 = col * (card_w + gap) + gap, row * (card_h + gap) + gap
-            x2, y2 = x1 + card_w, y1 + card_h
+        for name, data in self.blueprint_data.items():
+            rx, ry, rw, rh = data["rect"]
+            x1, y1, x2, y2 = rx*w, ry*h, (rx+rw)*w, (ry+rh)*h
+            room_color = data["dark_color"] if self.dark_mode else data["color"]
+            outline_color = "#f8fafc" if self.dark_mode else "#1e293b"
             
-            self.canvas.create_rectangle(x1, y1, x2, y2, outline="#cbd5e1", width=3, fill=color)
-            self.canvas.create_text(x1 + (card_w/2), y1 + (card_h * 0.15), text=name, fill=accent, 
-                                     font=("DejaVu Sans", 24, "bold"), 
-                                     width=card_w-40, justify="center")
-            
-            devices = [("💡", "Lights"), ("🌡️", "Climate"), ("🎵", "Audio")]
-            spacing = card_w / 4
-            mid_y = y1 + (card_h * 0.6) 
-            
-            for j, (icon, dev_label) in enumerate(devices):
-                ix = x1 + (spacing * (j + 1))
-                full_name = f"{name} {dev_label}"
-                
-                if full_name not in self.device_states:
-                    self.device_states[full_name] = tk.IntVar(value=50)
+            self.canvas.create_rectangle(x1, y1, x2, y2, fill=room_color, outline=outline_color, width=3)
+            self.canvas.create_text(x1+15, y1+20, text=name, anchor="nw", font=("Helvetica", 11, "bold"), fill=outline_color)
 
-                node_size = min(card_h * 0.15, 50) 
-                node = self.canvas.create_oval(ix-node_size, mid_y-node_size, ix+node_size, mid_y+node_size, 
-                                               fill="white", outline="#e2e8f0", width=2)
-                self.canvas.create_text(ix, mid_y, text=icon, font=("Noto Color Emoji", int(node_size * 0.8)))
-                
-                def open_pop(e, n=full_name, x=ix, y=mid_y): self.show_device_overlay(x, y, n)
-                self.canvas.tag_bind(node, "<Button-1>", open_pop)
-                
-                self.add_sidebar_card(full_name, icon, accent)
+            for sym, offset_x in device_types:
+                ix, iy = x1 + (rw*w*offset_x), y1 + (rh*h*0.6)
+                dev_id = f"{name}_{sym}"
+                if dev_id not in self.device_states:
+                    self.device_states[dev_id] = tk.IntVar(value=50)
+                r = 22
+                self.canvas.create_oval(ix-r, iy-r, ix+r, iy+r, fill="#1e293b" if self.dark_mode else "white", outline="#334155" if self.dark_mode else "#cbd5e1", width=2)
+                self.canvas.create_text(ix, iy, text=sym, font=("Arial", 16), fill="white" if self.dark_mode else "black")
+                self.add_to_sidebar(name, dev_id, sym)
 
-    def add_sidebar_card(self, name, icon, accent):
-        if name in self.sidebar_widgets: return 
+        # --- PORTE ---
+        self.draw_door(0.20 * w, 0.40 * h, type="H", flip=True) 
+        self.draw_door(0.35 * w, 0.40 * h, type="H", flip=True)
+        self.draw_door(0.20 * w, 0.45 * h, type="V", flip=False)
+        self.draw_door(0.20 * w, 0.65 * h, type="V", flip=False)
+        self.draw_door(0.50 * w, 0.65 * h, type="V", flip=True)
+        self.draw_door(0.60 * w, 0.25 * h, type="V", flip=True)
+        self.draw_door(0.75 * w, 0.50 * h, type="H", flip=False)
+        self.draw_door(0.50 * w, 0.55 * h, type="V", flip=False)
 
-        # MODIFICA: padx ridotto per permettere alle card di estendersi fino ai bordi laterali
-        card = tk.Frame(self.scrollable_frame, bg="white", highlightbackground="#f1f5f9", highlightthickness=2, padx=10, pady=25)
-        card.pack(fill="x", padx=5, pady=10)
-
-        head = tk.Frame(card, bg="white")
-        head.pack(fill="x")
-        
-        tk.Label(head, text=icon, font=("Noto Color Emoji", 32), bg="white").pack(side="left")
-        tk.Label(head, text=name, font=("DejaVu Sans", 14, "bold"), bg="white", fg="#1e293b", 
-                 wraplength=350, justify="left").pack(side="left", padx=15)
-
-        s = ttk.Scale(card, from_=0, to=100, orient="horizontal", 
-                      variable=self.device_states[name], style="Nexus.Horizontal.TScale")
-        s.pack(fill="x", pady=(20, 0))
-        self.sidebar_widgets[name] = card
-
-    def show_device_overlay(self, x, y, dev_name):
-        if self.current_overlay: self.current_overlay.destroy()
-        overlay = tk.Frame(self.canvas, bg="white", highlightbackground="#2563eb", highlightthickness=3)
-        self.current_overlay = overlay
-        
-        tk.Label(overlay, text=dev_name.upper(), font=("DejaVu Sans", 12, "bold"), 
-                 bg="#2563eb", fg="white", pady=12).pack(fill="x")
-        
-        content = tk.Frame(overlay, bg="white", padx=30, pady=25)
-        content.pack(fill="both")
-
-        ttk.Scale(content, from_=0, to=100, variable=self.device_states[dev_name], 
-                  style="Nexus.Horizontal.TScale").pack(fill="x", pady=20)
-
-        tk.Button(content, text="SAVE CHANGES", command=overlay.destroy, bg="#1e293b", 
-                  fg="white", font=("DejaVu Sans", 11, "bold"), bd=0, pady=12).pack(fill="x")
-        
-        overlay.place(x=x-150, y=y+60, width=300)
+        self.scrollable_frame.update_idletasks()
+        self.side_canvas.config(scrollregion=self.side_canvas.bbox("all"))
 
 if __name__ == "__main__":
     root = tk.Tk()
