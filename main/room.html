@@ -1,245 +1,266 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS LIGHT OS - High Visibility Mode</title>
+    <title>NEXUS LIGHT OS - All-in-One</title>
     <style>
+        /* --- CSS: STYLE AND LAYOUT --- */
         :root {
             --bg-main: #f1f5f9;
             --bg-sidebar: #ffffff;
-            --fg-text: #1e293b;
-            --topbar-bg: #1e293b;
-            --topbar-fg: #f8fafc;
-            --border-color: #cbd5e1;
-            --card-border: #e2e8f0;
-            --slider-trough: #e2e8f0;
+            --text-color: #1e293b;
+            --accent: #2563eb;
+            --room-bg: #eff6ff;
+            --border: #cbd5e1;
+            --header-bg: #1e293b;
         }
 
-        body.dark-mode {
+        [data-theme="dark"] {
             --bg-main: #0f172a;
             --bg-sidebar: #1e293b;
-            --fg-text: #f8fafc;
-            --border-color: #334155;
-            --card-border: #334155;
-            --slider-trough: #334155;
+            --text-color: #f8fafc;
+            --room-bg: #1e293b;
+            --border: #475569;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica', Arial, sans-serif; }
-
         body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg-main);
-            color: var(--fg-text);
-            height: 100vh;
+            color: var(--text-color);
             display: flex;
             flex-direction: column;
+            height: 100vh;
             overflow: hidden;
-            transition: background-color 0.3s;
+            transition: background 0.3s ease;
         }
 
         header {
-            height: 70px;
-            background-color: var(--topbar-bg);
-            color: var(--topbar-fg);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-            z-index: 10;
-        }
-
-        header h1 { font-size: 22px; font-weight: bold; }
-
-        .toggle-btn {
-            background-color: #334155;
+            background: var(--header-bg);
             color: white;
-            border: none;
-            padding: 8px 20px;
-            font-weight: bold;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 10px;
+            padding: 1.5rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
         }
 
-        main {
+        .main-container {
             display: flex;
             flex: 1;
             overflow: hidden;
         }
 
-        .left-panel {
-            flex: 0.68;
-            position: relative;
-            padding: 20px;
+        /* Map Panel (Left) */
+        .map-panel {
+            flex: 0.65;
+            padding: 2rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        .blueprint-container {
-            position: relative;
+        .blueprint {
+            display: grid;
             width: 100%;
-            height: 100%;
+            height: 90%;
+            gap: 15px;
+            grid-template-areas: 
+                "b1 b1 b2 b2 liv liv"
+                "ba1 ha ha ent liv liv"
+                "ut ba2 ba2 ent kit kit";
+            grid-template-columns: repeat(6, 1fr);
+            grid-template-rows: repeat(3, 1fr);
         }
 
         .room {
-            position: absolute;
-            border: 3px solid var(--fg-text);
+            background: var(--room-bg);
+            border: 3px solid var(--text-color);
             display: flex;
-            flex-direction: column;
-            padding: 10px;
-            transition: all 0.3s;
-            z-index: 1;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            font-size: 1.8rem;
+            font-weight: 800;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        /* Sidebar Controls (Right) */
+        .sidebar {
+            flex: 0.35;
+            background: var(--bg-sidebar);
+            border-left: 2px solid var(--border);
+            padding: 2rem;
+            overflow-y: auto;
+            box-shadow: -5px 0 15px rgba(0,0,0,0.05);
+        }
+
+        .sidebar h2 {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            border-bottom: 4px solid var(--accent);
+            display: inline-block;
+        }
+
+        .control-card {
+            background: rgba(0,0,0,0.02);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 2.5rem;
         }
 
         .room-title {
-            font-size: 11px;
+            color: var(--accent);
+            font-size: 1.4rem;
             font-weight: bold;
-            margin-bottom: 10px;
-            pointer-events: none;
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .device-icons {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 100%;
+        .param-group {
+            margin-bottom: 2rem;
         }
 
-        /* STILE PORTE */
-        .door {
-            position: absolute;
-            background: #94a3b8;
-            border: 1px solid #1e293b;
-            z-index: 5; /* Sopra le stanze */
-        }
-
-        body.dark-mode .door {
-            background: #475569;
-            border-color: #94a3b8;
-        }
-
-        .right-panel {
-            flex: 0.32;
-            background-color: var(--bg-sidebar);
-            border-left: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-title {
-            padding: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            text-align: center;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .scroll-area {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 20px;
-        }
-
-        .card {
-            background-color: var(--bg-sidebar);
-            border: 1px solid var(--card-border);
-            padding: 15px;
-            margin-bottom: 15px;
-            border-radius: 4px;
-        }
-
-        .card-label {
-            font-size: 12px;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .param-label {
             display: block;
+            font-size: 1.3rem; /* Large text */
+            font-weight: 700;
+            margin-bottom: 12px;
         }
 
-        input[type="range"] {
-            width: 100%;
+        /* Giant Long Slider */
+        input[type=range] {
+            -webkit-appearance: none;
+            width: 100%; /* Full width of sidebar */
+            height: 15px;
+            background: var(--border);
+            border-radius: 10px;
+            outline: none;
             cursor: pointer;
-            accent-color: #1e293b;
         }
 
-        /* Posizioni Stanze */
-        #bedroom1 { left: 5%;  top: 5%;  width: 30%; height: 35%; background-color: #eff6ff; }
-        #bedroom2 { left: 35%; top: 5%;  width: 25%; height: 35%; background-color: #eff6ff; }
-        #bath1    { left: 5%;  top: 40%; width: 15%; height: 20%; background-color: #f0f9ff; }
-        #utility  { left: 5%;  top: 60%; width: 20%; height: 30%; background-color: #f8fafc; }
-        #hall     { left: 20%; top: 40%; width: 30%; height: 20%; background-color: #ffffff; }
-        #bath2    { left: 25%; top: 60%; width: 25%; height: 30%; background-color: #f0f9ff; }
-        #living   { left: 60%; top: 5%;  width: 35%; height: 45%; background-color: #faf5ff; }
-        #kitchen  { left: 60%; top: 50%; width: 35%; height: 40%; background-color: #fff7ed; }
-        #entry    { left: 50%; top: 40%; width: 10%; height: 30%; background-color: #f1f5f9; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 30px;
+            height: 30px;
+            background: var(--accent);
+            border-radius: 50%;
+            cursor: pointer;
+            transition: transform 0.1s;
+        }
 
-        body.dark-mode #bedroom1, body.dark-mode #bedroom2, body.dark-mode #hall { background-color: #1e293b; }
-        body.dark-mode #bath1, body.dark-mode #bath2 { background-color: #0f172a; }
-        body.dark-mode #utility, body.dark-mode #entry { background-color: #334155; }
-        body.dark-mode #living { background-color: #1e1b4b; }
-        body.dark-mode #kitchen { background-color: #431407; }
+        input[type=range]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        #theme-toggle {
+            background: var(--accent);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
 
     </style>
 </head>
 <body>
 
-<header>
-    <h1>NEXUS LIGHT | DASHBOARD</h1>
-    <button class="toggle-btn" onclick="toggleTheme()">🌓 TOGGLE MODE</button>
-</header>
+    <header>
+        <h1>NEXUS LIGHT | MASTER CONTROLLER</h1>
+        <button id="theme-toggle" onclick="toggleTheme()">🌓 SWITCH MODE</button>
+    </header>
 
-<main>
-    <div class="left-panel">
-        <div class="blueprint-container" id="blueprint">
-            <!-- Stanze -->
-            <div class="room" id="bedroom1"><span class="room-title">BEDROOM 1</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="bedroom2"><span class="room-title">BEDROOM 2</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="bath1"><span class="room-title">BATH 1</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="utility"><span class="room-title">UTILITY</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="hall"><span class="room-title">HALL</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="bath2"><span class="room-title">BATH 2</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="living"><span class="room-title">LIVING</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="kitchen"><span class="room-title">KITCHEN</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
-            <div class="room" id="entry"><span class="room-title">ENTRY</span><div class="device-icons"><span>💡</span><span>🌡️</span><span>🎵</span><span>🪟</span></div></div>
+    <main class="main-container">
+        <!-- Home Map -->
+        <section class="map-panel">
+            <div class="blueprint">
+                <div class="room" style="grid-area: b1;"><span>🛏️<br>BEDROOM 1</span></div>
+                <div class="room" style="grid-area: b2;"><span>🛌<br>BEDROOM 2</span></div>
+                <div class="room" style="grid-area: ba1;"><span>🚿<br>BATH 1</span></div>
+                <div class="room" style="grid-area: ut;"><span>🧺<br>UTILITY</span></div>
+                <div class="room" style="grid-area: ha;"><span>🚪<br>HALL</span></div>
+                <div class="room" style="grid-area: ba2;"><span>🛁<br>BATH 2</span></div>
+                <div class="room" style="grid-area: liv;"><span>🛋️<br>LIVING</span></div>
+                <div class="room" style="grid-area: kit;"><span>🍳<br>KITCHEN</span></div>
+                <div class="room" style="grid-area: ent;"><span>🔑<br>ENTRY</span></div>
+            </div>
+        </section>
 
-            <!-- PORTE (Inserite qui per funzionare correttamente) -->
-            <div class="door" style="left: 33.5%; top: 15%; width: 3%; height: 10%;"></div> <!-- Bed1 -> Bed2 -->
-            <div class="door" style="left: 58.5%; top: 15%; width: 3%; height: 10%;"></div> <!-- Bed2 -> Living -->
-            <div class="door" style="left: 58.5%; top: 70%; width: 3%; height: 10%;"></div> <!-- Entry -> Kitchen -->
-            <div class="door" style="left: 10%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Bed1 -> Bath1 -->
-            <div class="door" style="left: 25%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Bed1 -> Hall -->
-            <div class="door" style="left: 40%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Bed2 -> Hall -->
-            <div class="door" style="left: 10%; top: 58.5%; width: 8%; height: 3%;"></div> <!-- Bath1 -> Utility -->
-            <div class="door" style="left: 30%; top: 58.5%; width: 8%; height: 3%;"></div> <!-- Hall -> Bath2 -->
-            <div class="door" style="left: 75%; top: 48.5%; width: 8%; height: 3%;"></div> <!-- Living -> Kitchen -->
-            <div class="door" style="left: 51%; top: 38.5%; width: 8%; height: 3%;"></div> <!-- Hall -> Entry -->
-        </div>
-    </div>
+        <!-- Control Sidebar -->
+        <aside class="sidebar">
+            <h2>PARAMETERS</h2>
+            <div id="controls-container">
+                <!-- Generated by JavaScript -->
+            </div>
+        </aside>
+    </main>
 
-    <div class="right-panel">
-        <div class="sidebar-title">PARAMETERS</div>
-        <div class="scroll-area" id="sidebar-content"></div>
-    </div>
-</main>
+    <script>
+        /* --- JAVASCRIPT: LOGIC AND DYNAMICS --- */
+        const rooms = [
+            { name: "Bedroom 1", icon: "🛏️" },
+            { name: "Bedroom 2", icon: "🛌" },
+            { name: "Bath 1", icon: "🚿" },
+            { name: "Utility", icon: "🧺" },
+            { name: "Hall", icon: "🚪" },
+            { name: "Bath 2", icon: "🛁" },
+            { name: "Living", icon: "🛋️" },
+            { name: "Kitchen", icon: "🍳" },
+            { name: "Entry", icon: "🔑" }
+        ];
 
-<script>
-    const rooms = ["BEDROOM 1", "BEDROOM 2", "BATH 1", "UTILITY", "HALL", "BATH 2", "LIVING", "KITCHEN", "ENTRY"];
-    const icons = [ {s: "💡", n: "Light"}, {s: "🌡️", n: "Temp"}, {s: "🎵", n: "Audio"}, {s: "🪟", n: "Shade"} ];
-    
-    const sidebar = document.getElementById('sidebar-content');
-    rooms.forEach(room => {
-        icons.forEach(icon => {
+        const sensors = [
+            { name: "Light", icon: "💡" },
+            { name: "Climate", icon: "🌡️" },
+            { name: "Music", icon: "🎵" },
+            { name: "Windows", icon: "🪟" }
+        ];
+
+        const container = document.getElementById('controls-container');
+
+        // Dynamic generation of controls
+        rooms.forEach(room => {
             const card = document.createElement('div');
-            card.className = 'card';
-            card.innerHTML = `
-                <span class="card-label">${icon.s} ${room}</span>
-                <input type="range" min="0" max="100" value="50">
-            `;
-            sidebar.appendChild(card);
+            card.className = 'control-card';
+            card.innerHTML = `<div class="room-title">📍 ${room.name}</div>`;
+
+            sensors.forEach(s => {
+                const paramId = `${room.name}-${s.name}`.replace(/\s+/g, '-').toLowerCase();
+                const group = document.createElement('div');
+                group.className = 'param-group';
+                
+                group.innerHTML = `
+                    <label class="param-label" id="label-${paramId}">
+                        ${s.icon} ${s.name.toUpperCase()}: 50%
+                    </label>
+                    <input type="range" min="0" max="100" value="50" 
+                        oninput="updateVal('${paramId}', '${s.name.toUpperCase()}', '${s.icon}', this.value)">
+                `;
+                card.appendChild(group);
+            });
+            container.appendChild(card);
         });
-    });
 
-    function toggleTheme() {
-        document.body.classList.toggle('dark-mode');
-    }
-</script>
+        // Update label text when slider moves
+        function updateVal(id, name, icon, val) {
+            document.getElementById(`label-${id}`).innerText = `${icon} ${name}: ${val}%`;
+        }
 
+        // Theme Switch (Light/Dark)
+        function toggleTheme() {
+            const body = document.body;
+            if (body.getAttribute('data-theme') === 'dark') {
+                body.removeAttribute('data-theme');
+            } else {
+                body.setAttribute('data-theme', 'dark');
+            }
+        }
+    </script>
 </body>
 </html>

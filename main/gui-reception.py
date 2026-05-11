@@ -1,118 +1,133 @@
-import customtkinter as ctk
+import tkinter as tk
+from tkinter import ttk
 from datetime import datetime
 
-# Theme Settings: Light mode with professional accents
-ctk.set_appearance_mode("Light") 
-ctk.set_default_color_theme("blue")
+class NexusReceptionMonitor:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("NEXUS LIGHT OS - RECEPTION MONITORING SYSTEM")
+        self.root.geometry("1400x900")
+        self.root.configure(bg="#F8FAFC") # Light background (Slate 50)
 
-class ReceptionMonitor(ctk.CTk):
-    def __init__(self):
-        super().__init__()
+        # Configuration (Matching your HTML structure)
+        self.rooms_config = [
+            {"name": "ENTRY", "icon": "🔑"},
+            {"name": "HALL", "icon": "🚪"},
+            {"name": "LIVING", "icon": "🛋️"},
+            {"name": "KITCHEN", "icon": "🍳"},
+            {"name": "BEDROOM 1", "icon": "🛏️"},
+            {"name": "BEDROOM 2", "icon": "🛌"},
+            {"name": "BATH 1", "icon": "🚿"},
+            {"name": "BATH 2", "icon": "🛁"},
+            {"name": "UTILITY", "icon": "🧺"}         
+        ]
 
-        self.title("OMNI SYSTEM - ROOM MONITORING DASHBOARD")
-        self.geometry("1200x800")
-        self.configure(fg_color="#f0f2f5") # Clean, modern gray-white
+        self.sensors = [
+            {"name": "LIGHT", "icon": "💡"},
+            {"name": "CLIMATE", "icon": "🌡️"},
+            {"name": "MUSIC", "icon": "🎵"},
+            {"name": "WINDOWS", "icon": "🪟"}
+        ]
 
-        # --- Header ---
-        self.header = ctk.CTkLabel(self, text="HOSPITALITY CONTROL CENTER", 
-                                   font=ctk.CTkFont(size=32, weight="bold"), text_color="#1c1e21")
-        self.header.pack(pady=30)
+        # Mock Data (Reception only visualizes what comes from the "system")
+        self.rooms_data = {r["name"]: {s["name"]: 50 for s in self.sensors} for r in self.rooms_config}
+        self.current_room = "LIVING"
 
-        # --- Main Layout Container ---
-        self.main_container = ctk.CTkFrame(self, fg_color="transparent")
-        self.main_container.pack(fill="both", expand=True, padx=30, pady=(0, 30))
+        self.create_widgets()
+        self.select_room("LIVING")
 
-        # --- LEFT PANEL: ROOMS (Grid) ---
-        self.rooms_grid = ctk.CTkFrame(self.main_container, fg_color="transparent")
-        self.rooms_grid.pack(side="left", fill="both", expand=True)
-        self.rooms_grid.grid_columnconfigure((0, 1), weight=1)
-        self.rooms_grid.grid_rowconfigure(0, weight=1)
-
-        self.create_room_card(self.rooms_grid, "SUITE 101", 0, "OCCUPIED", "#e74c3c")
-        self.create_room_card(self.rooms_grid, "ROOM 102", 1, "AVAILABLE", "#2ecc71")
-
-        # --- RIGHT PANEL: LOGS ---
-        self.sidebar = ctk.CTkFrame(self.main_container, width=350, corner_radius=20, fg_color="#ffffff", border_width=1, border_color="#dce0e4")
-        self.sidebar.pack(side="right", fill="y", padx=(20, 0))
-        self.sidebar.pack_propagate(False)
+    def create_widgets(self):
+        # --- LEFT SIDEBAR (LARGE LIST) ---
+        self.sidebar = tk.Frame(self.root, bg="#FFFFFF", width=350, highlightbackground="#E2E8F0", highlightthickness=1)
+        self.sidebar.pack(side="left", fill="y")
         
-        ctk.CTkLabel(self.sidebar, text="SYSTEM LOGS", font=ctk.CTkFont(size=18, weight="bold"), text_color="#606770").pack(pady=20)
+        tk.Label(self.sidebar, text="SYSTEM ROOMS", font=("Segoe UI", 20, "bold"), 
+                 bg="#FFFFFF", fg="#1E293B", pady=30).pack()
+
+        for room in self.rooms_config:
+            btn = tk.Button(self.sidebar, 
+                            text=f"{room['icon']}  {room['name']}", 
+                            command=lambda r=room['name']: self.select_room(r),
+                            bg="#F1F5F9", fg="#334155", font=("Segoe UI", 14, "bold"),
+                            relief="flat", activebackground="#2563EB", 
+                            activeforeground="white", anchor="w", padx=30, pady=15, cursor="hand2")
+            btn.pack(pady=5, padx=20, fill="x")
+
+        # --- CENTRAL MONITORING PANEL ---
+        self.main_panel = tk.Frame(self.root, bg="#F8FAFC")
+        self.main_panel.pack(side="left", fill="both", expand=True, padx=60)
+
+        # Room Status Header
+        header_container = tk.Frame(self.main_panel, bg="#F8FAFC")
+        header_container.pack(fill="x", pady=(50, 40))
+
+        self.title_lbl = tk.Label(header_container, text=self.current_room, 
+                                 font=("Segoe UI", 48, "bold"), bg="#F8FAFC", fg="#0F172A")
+        self.title_lbl.pack(side="left")
+
+        tk.Label(header_container, text=" LIVE STATUS", font=("Segoe UI", 16), 
+                 bg="#F8FAFC", fg="#10B981").pack(side="left", padx=20, pady=(20, 0))
+
+        # Data Display Cards
+        self.display_elements = {}
+        for sensor in self.sensors:
+            s_name = sensor["name"]
+            s_icon = sensor["icon"]
+
+            # Large Card for each parameter
+            card = tk.Frame(self.main_panel, bg="#FFFFFF", pady=30, padx=40, 
+                            highlightbackground="#E2E8F0", highlightthickness=1)
+            card.pack(fill="x", pady=15)
+
+            # Labels
+            tk.Label(card, text=f"{s_icon} {s_name}", font=("Segoe UI", 18, "bold"), 
+                     bg="#FFFFFF", fg="#64748B").pack(side="left")
+            
+            val_lbl = tk.Label(card, text="50%", font=("Segoe UI", 24, "bold"), 
+                              bg="#FFFFFF", fg="#2563EB")
+            val_lbl.pack(side="right")
+
+            # Progress Bar (Replaces Sliders to prevent manual editing)
+            style = ttk.Style()
+            style.configure("TProgressbar", thickness=20)
+            
+            pb = ttk.Progressbar(card, orient="horizontal", length=400, mode="determinate")
+            pb.pack(side="right", padx=50)
+            pb['value'] = 50
+            
+            self.display_elements[s_name] = {"bar": pb, "lbl": val_lbl}
+
+        # --- RIGHT LOG PANEL (HUGE) ---
+        self.log_frame = tk.Frame(self.root, bg="#1E293B", width=400)
+        self.log_frame.pack(side="right", fill="y")
         
-        self.log_box = ctk.CTkTextbox(self.sidebar, font=("Consolas", 12), fg_color="#f5f6f7", 
-                                      text_color="#1c1e21", border_width=0)
-        self.log_box.pack(padx=20, pady=10, fill="both", expand=True)
-        self.log_box.configure(state="disabled")
+        tk.Label(self.log_frame, text="GLOBAL ACTIVITY LOG", font=("Segoe UI", 14, "bold"), 
+                 bg="#1E293B", fg="#F8FAFC", pady=25).pack()
 
-        self.add_log("System", "Monitoring service active")
+        self.log_box = tk.Text(self.log_frame, width=40, bg="#0F172A", fg="#38BDF8", 
+                               font=("Consolas", 12), state="disabled", borderwidth=0, padx=20)
+        self.log_box.pack(fill="both", expand=True, padx=15, pady=15)
 
-    def create_room_card(self, parent, name, col, status, status_color):
-        # Professional Card
-        card = ctk.CTkFrame(parent, corner_radius=25, fg_color="#ffffff", border_width=1, border_color="#dce0e4")
-        card.grid(row=0, column=col, padx=15, pady=10, sticky="nsew")
-
-        # Room Name & Status Badge
-        ctk.CTkLabel(card, text=name, font=ctk.CTkFont(size=28, weight="bold"), text_color="#1c1e21").pack(pady=(25, 5))
+    def select_room(self, name):
+        self.current_room = name
+        self.title_lbl.configure(text=name)
         
-        status_badge = ctk.CTkLabel(card, text=f" {status} ", font=ctk.CTkFont(size=14, weight="bold"), 
-                                    text_color="#ffffff", fg_color=status_color, corner_radius=10)
-        status_badge.pack(pady=(0, 20))
-
-        # Large Sensor Metrics
-        sensor_frame = ctk.CTkFrame(card, fg_color="#f8f9fa", corner_radius=15)
-        sensor_frame.pack(padx=25, fill="x", pady=10)
+        # Visualize stored data
+        data = self.rooms_data[name]
+        for s_name, value in data.items():
+            self.display_elements[s_name]["bar"]['value'] = value
+            self.display_elements[s_name]["lbl"].configure(text=f"{value}%")
         
-        metrics = [("🌡️", "23.5°C", "TEMP"), ("💧", "48%", "HUMIDITY"), ("☀️", "150lx", "LIGHT")]
-        for icon, m_val, m_name in metrics:
-            f = ctk.CTkFrame(sensor_frame, fg_color="transparent")
-            f.pack(side="left", expand=True, pady=15)
-            ctk.CTkLabel(f, text=icon, font=ctk.CTkFont(size=24)).pack()
-            ctk.CTkLabel(f, text=m_val, font=ctk.CTkFont(size=18, weight="bold"), text_color="#1c1e21").pack()
-            ctk.CTkLabel(f, text=m_name, font=ctk.CTkFont(size=11), text_color="#8d949e").pack()
+        self.add_log("RECEPTION", f"Authorized Access to {name} monitoring")
 
-        # Display-only Progress Bars (HVAC & Shades)
-        self.create_read_only_bar(card, "CLIMATE CONTROL", 0.75, "75% Power Output")
-        self.create_read_only_bar(card, "SMART SHADES", 1.0, "Fully Opened")
-
-        # Status Indicators (Large Icons)
-        status_row = ctk.CTkFrame(card, fg_color="transparent")
-        status_row.pack(side="bottom", fill="x", pady=30, padx=20)
-
-        self.create_status_icon(status_row, "💡", "L1", True)
-        self.create_status_icon(status_row, "💡", "L2", False)
-        self.create_status_icon(status_row, "🔊", "AUDIO", False)
-
-    def create_read_only_bar(self, parent, label, value, detail):
-        frame = ctk.CTkFrame(parent, fg_color="transparent")
-        frame.pack(fill="x", padx=40, pady=12)
-        
-        ctk.CTkLabel(frame, text=label, font=ctk.CTkFont(size=13, weight="bold"), text_color="#444").pack(anchor="w")
-        bar = ctk.CTkProgressBar(frame, height=15, corner_radius=10)
-        bar.set(value)
-        bar.pack(fill="x", pady=5)
-        ctk.CTkLabel(frame, text=detail, font=ctk.CTkFont(size=11), text_color="#888").pack(anchor="e")
-
-    def create_status_icon(self, parent, icon, label, is_active):
-        frame = ctk.CTkFrame(parent, fg_color="#f0f2f5" if is_active else "#f9f9f9", corner_radius=12, width=90)
-        frame.pack(side="left", expand=True, padx=8, pady=5)
-        
-        color = "#3498db" if is_active else "#bcc0c4"
-        bg_circle = "#e7f3ff" if is_active else "#f0f2f5"
-        
-        icon_lbl = ctk.CTkLabel(frame, text=icon, font=ctk.CTkFont(size=26), text_color=color)
-        icon_lbl.pack(pady=(10, 0))
-        
-        text_st = "ACTIVE" if is_active else "OFF"
-        ctk.CTkLabel(frame, text=label, font=ctk.CTkFont(size=11, weight="bold"), text_color="#606770").pack()
-        ctk.CTkLabel(frame, text=text_st, font=ctk.CTkFont(size=10, weight="bold"), text_color=color).pack(pady=(0, 10))
-
-    def add_log(self, source, message):
-        timestamp = datetime.now().strftime("%H:%M:%S")
-        log_entry = f"[{timestamp}] {source.upper()}: {message}\n"
+    def add_log(self, src, msg):
+        time = datetime.now().strftime("%H:%M:%S")
         self.log_box.configure(state="normal")
-        self.log_box.insert("end", log_entry)
-        self.log_box.configure(state="disabled")
+        self.log_box.insert("end", f"[{time}] {src}:\n> {msg}\n\n")
         self.log_box.see("end")
+        self.log_box.configure(state="disabled")
 
 if __name__ == "__main__":
-    app = ReceptionMonitor()
-    app.mainloop()
+    root = tk.Tk()
+    app = NexusReceptionMonitor(root)
+    root.mainloop()
