@@ -38,16 +38,13 @@ class NexusLightOS:
     def setup_styles(self):
         self.style = ttk.Style()
         self.style.theme_use('clam')
-        self.style.configure("Nexus.Horizontal.TScale", background="#ffffff", troughcolor="#e2e8f0", sliderthickness=25)
 
     def toggle_theme(self):
         self.dark_mode = not self.dark_mode
-        # Definisci i colori base
         self.bg_main = "#0f172a" if self.dark_mode else "#f1f5f9"
         self.bg_sidebar = "#1e293b" if self.dark_mode else "#ffffff"
         self.fg_text = "#f8fafc" if self.dark_mode else "#1e293b"
         
-        # Applica ai container
         self.root.configure(bg=self.bg_main)
         self.main_container.configure(bg=self.bg_main)
         self.left_panel.configure(bg=self.bg_main)
@@ -57,12 +54,14 @@ class NexusLightOS:
         self.scrollable_frame.configure(bg=self.bg_sidebar)
         self.sidebar_title.configure(bg=self.bg_sidebar, fg=self.fg_text)
         
-        # Aggiorna widget sidebar
         for dev_id, card in self.sidebar_widgets.items():
             card.configure(bg=self.bg_sidebar, highlightbackground="#334155" if self.dark_mode else "#e2e8f0")
             for child in card.winfo_children():
                 if isinstance(child, tk.Label):
                     child.configure(bg=self.bg_sidebar, fg=self.fg_text)
+                # Aggiorna anche il colore della barra del cursore nel cambio tema
+                if isinstance(child, tk.Scale):
+                    child.configure(bg="#2563eb", troughcolor="#334155" if self.dark_mode else "#e2e8f0")
         
         self.draw_blueprint()
 
@@ -72,7 +71,6 @@ class NexusLightOS:
         
         tk.Label(self.top_bar, text="NEXUS LIGHT | DASHBOARD", font=("Helvetica", 22, "bold"), fg="#f8fafc", bg="#1e293b").pack(side="left", padx=30)
         
-        # Bottone Toggle Theme
         tk.Button(self.top_bar, text="🌓 TOGGLE MODE", font=("Helvetica", 10, "bold"), 
                   command=self.toggle_theme, bg="#334155", fg="white", bd=0, padx=20, pady=5, cursor="hand2").pack(side="right", padx=30)
 
@@ -130,8 +128,18 @@ class NexusLightOS:
         card.pack(fill="x", padx=20, pady=8)
         lbl_top = tk.Label(card, text=f"{icon} {room_name}", font=("Helvetica", 12, "bold"), bg=self.bg_sidebar, fg=self.fg_text, anchor="w")
         lbl_top.pack(fill="x", padx=15)
-        scale = ttk.Scale(card, from_=0, to=100, variable=self.device_states[dev_id], style="Nexus.Horizontal.TScale")
-        scale.pack(fill="x", padx=15, pady=10)
+        
+        # --- MODIFICA RADICALE: Uso tk.Scale invece di ttk.Scale ---
+        # bg="#2563eb" -> Colore del cursore blu
+        # width=40 -> Spessore della barra
+        # sliderlength=60 -> Dimensione del cursore (pomello)
+        # showvalue=0 -> Rimuove il numero che compare sopra per un look pulito
+        scale = tk.Scale(card, from_=0, to=100, variable=self.device_states[dev_id],
+                         orient="horizontal", bg="#2563eb", troughcolor="#e2e8f0",
+                         width=40, sliderlength=60, bd=0, highlightthickness=0, 
+                         showvalue=0, cursor="hand2")
+        scale.pack(fill="x", padx=15, pady=20)
+        
         self.sidebar_widgets[dev_id] = card
 
     def draw_blueprint(self):
@@ -160,11 +168,10 @@ class NexusLightOS:
                 self.canvas.create_text(ix, iy, text=sym, font=("Arial", 16), fill="white" if self.dark_mode else "black")
                 self.add_to_sidebar(name, dev_id, sym)
 
-        # --- PORTE ---
         self.draw_door(0.20 * w, 0.40 * h, type="H", flip=True) 
         self.draw_door(0.35 * w, 0.40 * h, type="H", flip=True)
         self.draw_door(0.20 * w, 0.45 * h, type="V", flip=False)
-        self.draw_door(0.20 * w, 0.65 * h, type="V", flip=False)
+        self.draw_door(0.25 * w, 0.65 * h, type="V", flip=False) 
         self.draw_door(0.50 * w, 0.65 * h, type="V", flip=True)
         self.draw_door(0.60 * w, 0.25 * h, type="V", flip=True)
         self.draw_door(0.75 * w, 0.50 * h, type="H", flip=False)
