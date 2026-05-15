@@ -2,130 +2,281 @@ import tkinter as tk
 from tkinter import ttk
 from datetime import datetime
 
+
 class NexusReceptionMonitor:
+
     def __init__(self, root):
+
         self.root = root
-        self.root.title("NEXUS LIGHT OS - RECEPTION MONITORING SYSTEM")
-        self.root.geometry("1400x900")
-        self.root.configure(bg="#F8FAFC") # Light background (Slate 50)
+        self.root.title("TELKONET OMNIROOM - LUXURY CONTROL")
+        self.root.geometry("1550x920")
+        self.root.configure(bg="#F5F7FB")
 
-        # Configuration (Matching your HTML structure)
-        self.rooms_config = [
-            {"name": "ENTRY", "icon": "🔑"},
-            {"name": "HALL", "icon": "🚪"},
-            {"name": "LIVING", "icon": "🛋️"},
-            {"name": "KITCHEN", "icon": "🍳"},
-            {"name": "BEDROOM 1", "icon": "🛏️"},
-            {"name": "BEDROOM 2", "icon": "🛌"},
-            {"name": "BATH 1", "icon": "🚿"},
-            {"name": "BATH 2", "icon": "🛁"},
-            {"name": "UTILITY", "icon": "🧺"}         
-        ]
+        # ================= LUXURY COLORS =================
+        self.colors = {
+            "bg": "#F5F7FB",
+            "card": "#FFFFFF",
+            "blue": "#0B3A6A",
+            "blue_soft": "#E8F1FF",
+            "accent": "#2F80ED",
+            "text": "#111827",
+            "soft": "#6B7280",
+            "border": "#E5EAF2",
+            "green": "#18A558"
+        }
 
-        self.sensors = [
-            {"name": "LIGHT", "icon": "💡"},
-            {"name": "CLIMATE", "icon": "🌡️"},
-            {"name": "MUSIC", "icon": "🎵"},
-            {"name": "WINDOWS", "icon": "🪟"}
-        ]
+        # ================= FONTS (INCREASED SIZE) =================
+        self.font_h1 = ("Helvetica", 40, "bold")
+        self.font_h2 = ("Helvetica", 26, "bold")
+        self.font_h3 = ("Helvetica", 20, "bold")
+        self.font_body = ("Helvetica", 16)
+        self.font_small = ("Helvetica", 13)
 
-        # Mock Data (Reception only visualizes what comes from the "system")
-        self.rooms_data = {r["name"]: {s["name"]: 50 for s in self.sensors} for r in self.rooms_config}
-        self.current_room = "LIVING"
+        # ================= SUITES =================
+        self.suites = ["SUITE 1", "SUITE 2", "SUITE 3", "SUITE 4", "SUITE 5"]
 
+        self.rooms = ["ENTRY", "HALL", "BATH", "BEDROOM", "EN-SUITE", "KITCHENETTE", "LIVING"]
+
+        # ================= DATA =================
+        self.rooms_data = {}
+        for suite in self.suites:
+            for room in self.rooms:
+                key = f"{suite} - {room}"
+                self.rooms_data[key] = {
+                    "lights": {"Ceiling": 25, "Floor lamp": 10, "Accent": 10, "Reading": 0},
+                    "climate": 20,
+                    "audio": 75,
+                    "blinds": 0,
+                    "active_scene": "Cinema"
+                }
+
+        self.selected_suite = tk.StringVar(value="SUITE 1")
+        self.current_room = "ENTRY"
+
+        self._style_ttk()
         self.create_widgets()
-        self.select_room("LIVING")
+        self.update_clock()
 
+    # ================= COMBOBOX STYLE =================
+    def _style_ttk(self):
+        style = ttk.Style()
+        style.theme_use("clam")
+
+        style.configure("Luxury.TCombobox",
+                        fieldbackground="#FFFFFF",
+                        background="#FFFFFF",
+                        foreground="#0B3A6A",
+                        padding=14,
+                        relief="flat",
+                        font=("Helvetica", 18, "bold"))
+
+        style.map("Luxury.TCombobox",
+                  fieldbackground=[("readonly", "#FFFFFF")],
+                  background=[("active", "#E8F1FF")])
+
+    # ================= UI =================
     def create_widgets(self):
-        # --- LEFT SIDEBAR (LARGE LIST) ---
-        self.sidebar = tk.Frame(self.root, bg="#FFFFFF", width=350, highlightbackground="#E2E8F0", highlightthickness=1)
-        self.sidebar.pack(side="left", fill="y")
-        
-        tk.Label(self.sidebar, text="SYSTEM ROOMS", font=("Segoe UI", 20, "bold"), 
-                 bg="#FFFFFF", fg="#1E293B", pady=30).pack()
 
-        for room in self.rooms_config:
-            btn = tk.Button(self.sidebar, 
-                            text=f"{room['icon']}  {room['name']}", 
-                            command=lambda r=room['name']: self.select_room(r),
-                            bg="#F1F5F9", fg="#334155", font=("Segoe UI", 14, "bold"),
-                            relief="flat", activebackground="#2563EB", 
-                            activeforeground="white", anchor="w", padx=30, pady=15, cursor="hand2")
-            btn.pack(pady=5, padx=20, fill="x")
+        header = tk.Frame(self.root, bg=self.colors["bg"])
+        header.pack(fill="x", padx=30, pady=25)
 
-        # --- CENTRAL MONITORING PANEL ---
-        self.main_panel = tk.Frame(self.root, bg="#F8FAFC")
-        self.main_panel.pack(side="left", fill="both", expand=True, padx=60)
+        tk.Label(header,
+                 text="TELKONET OMNIROOM",
+                 font=self.font_h1,
+                 bg=self.colors["bg"],
+                 fg=self.colors["blue"]).pack(side="left")
 
-        # Room Status Header
-        header_container = tk.Frame(self.main_panel, bg="#F8FAFC")
-        header_container.pack(fill="x", pady=(50, 40))
+        tk.Label(header,
+                 text="Reception Control",
+                 font=("Helvetica", 16),
+                 bg=self.colors["bg"],
+                 fg=self.colors["soft"]).pack(side="left", padx=20)
 
-        self.title_lbl = tk.Label(header_container, text=self.current_room, 
-                                 font=("Segoe UI", 48, "bold"), bg="#F8FAFC", fg="#0F172A")
-        self.title_lbl.pack(side="left")
+        self.clock_lbl = tk.Label(header,
+                                  font=("Consolas", 24, "bold"),
+                                  bg=self.colors["bg"],
+                                  fg=self.colors["text"])
+        self.clock_lbl.pack(side="right")
 
-        tk.Label(header_container, text=" LIVE STATUS", font=("Segoe UI", 16), 
-                 bg="#F8FAFC", fg="#10B981").pack(side="left", padx=20, pady=(20, 0))
+        main = tk.Frame(self.root, bg=self.colors["bg"])
+        main.pack(fill="both", expand=True, padx=25)
 
-        # Data Display Cards
-        self.display_elements = {}
-        for sensor in self.sensors:
-            s_name = sensor["name"]
-            s_icon = sensor["icon"]
+        # LEFT
+        left = tk.Frame(main, bg=self.colors["card"], width=320)
+        left.pack(side="left", fill="y", padx=(0, 20))
 
-            # Large Card for each parameter
-            card = tk.Frame(self.main_panel, bg="#FFFFFF", pady=30, padx=40, 
-                            highlightbackground="#E2E8F0", highlightthickness=1)
-            card.pack(fill="x", pady=15)
+        tk.Label(left,
+                 text="SUITE SELECTION",
+                 font=self.font_h3,
+                 bg=self.colors["card"],
+                 fg=self.colors["blue"]).pack(anchor="w", padx=18, pady=15)
 
-            # Labels
-            tk.Label(card, text=f"{s_icon} {s_name}", font=("Segoe UI", 18, "bold"), 
-                     bg="#FFFFFF", fg="#64748B").pack(side="left")
-            
-            val_lbl = tk.Label(card, text="50%", font=("Segoe UI", 24, "bold"), 
-                              bg="#FFFFFF", fg="#2563EB")
-            val_lbl.pack(side="right")
+        self.suite_menu = ttk.Combobox(left,
+                                        textvariable=self.selected_suite,
+                                        values=self.suites,
+                                        state="readonly",
+                                        style="Luxury.TCombobox")
+        self.suite_menu.pack(fill="x", padx=18, pady=8)
+        self.suite_menu.bind("<<ComboboxSelected>>", self.change_suite)
 
-            # Progress Bar (Replaces Sliders to prevent manual editing)
-            style = ttk.Style()
-            style.configure("TProgressbar", thickness=20)
-            
-            pb = ttk.Progressbar(card, orient="horizontal", length=400, mode="determinate")
-            pb.pack(side="right", padx=50)
-            pb['value'] = 50
-            
-            self.display_elements[s_name] = {"bar": pb, "lbl": val_lbl}
+        tk.Label(left,
+                 text="ROOMS",
+                 font=self.font_small,
+                 bg=self.colors["card"],
+                 fg=self.colors["soft"]).pack(anchor="w", padx=18, pady=(25, 10))
 
-        # --- RIGHT LOG PANEL (HUGE) ---
-        self.log_frame = tk.Frame(self.root, bg="#1E293B", width=400)
-        self.log_frame.pack(side="right", fill="y")
-        
-        tk.Label(self.log_frame, text="GLOBAL ACTIVITY LOG", font=("Segoe UI", 14, "bold"), 
-                 bg="#1E293B", fg="#F8FAFC", pady=25).pack()
+        self.room_frame = tk.Frame(left, bg=self.colors["card"])
+        self.room_frame.pack(fill="both", expand=True)
 
-        self.log_box = tk.Text(self.log_frame, width=40, bg="#0F172A", fg="#38BDF8", 
-                               font=("Consolas", 12), state="disabled", borderwidth=0, padx=20)
-        self.log_box.pack(fill="both", expand=True, padx=15, pady=15)
+        self.create_room_buttons()
 
-    def select_room(self, name):
-        self.current_room = name
-        self.title_lbl.configure(text=name)
-        
-        # Visualize stored data
-        data = self.rooms_data[name]
-        for s_name, value in data.items():
-            self.display_elements[s_name]["bar"]['value'] = value
-            self.display_elements[s_name]["lbl"].configure(text=f"{value}%")
-        
-        self.add_log("RECEPTION", f"Authorized Access to {name} monitoring")
+        # CENTER
+        self.center = tk.Frame(main,
+                               bg=self.colors["card"],
+                               highlightbackground=self.colors["border"],
+                               highlightthickness=1,
+                               padx=40,
+                               pady=35)
+        self.center.pack(side="left", fill="both", expand=True)
+
+        self.title_lbl = tk.Label(self.center,
+                                  text="",
+                                  font=self.font_h1,
+                                  bg=self.colors["card"],
+                                  fg=self.colors["blue"])
+        self.title_lbl.pack(anchor="w")
+
+        tk.Label(self.center,
+                 text="SYSTEM ONLINE • ALL SERVICES ACTIVE",
+                 font=self.font_small,
+                 bg=self.colors["card"],
+                 fg=self.colors["green"]).pack(anchor="w", pady=(5, 25))
+
+        scene = tk.Frame(self.center, bg=self.colors["blue_soft"], padx=25, pady=18)
+        scene.pack(fill="x", pady=(0, 25))
+
+        tk.Label(scene,
+                 text="ACTIVE SCENE",
+                 font=self.font_small,
+                 bg=self.colors["blue_soft"],
+                 fg=self.colors["soft"]).pack(anchor="w")
+
+        self.scene_lbl = tk.Label(scene,
+                                  text="CINEMA",
+                                  font=("Helvetica", 36, "bold"),
+                                  bg=self.colors["blue_soft"],
+                                  fg=self.colors["blue"])
+        self.scene_lbl.pack(anchor="w")
+
+        tk.Label(self.center,
+                 text="ROOM DATA",
+                 font=self.font_h3,
+                 bg=self.colors["card"],
+                 fg=self.colors["blue"]).pack(anchor="w", pady=15)
+
+        self.labels = {}
+        items = ["Ceiling Light", "Floor Lamp", "Accent Light",
+                 "Reading Light", "Climate", "Audio", "Blinds"]
+
+        for i in items:
+            row = tk.Frame(self.center, bg=self.colors["card"])
+            row.pack(fill="x", pady=10)
+
+            tk.Label(row,
+                     text=i,
+                     font=self.font_body,
+                     bg=self.colors["card"],
+                     fg=self.colors["text"]).pack(side="left")
+
+            val = tk.Label(row,
+                           text="--",
+                           font=("Helvetica", 18, "bold"),
+                           bg=self.colors["card"],
+                           fg=self.colors["accent"])
+            val.pack(side="right")
+
+            self.labels[i] = val
+
+        log = tk.Frame(main, bg=self.colors["card"], width=300)
+        log.pack(side="right", fill="y")
+
+        tk.Label(log,
+                 text="GUEST ACTIVITY LOG",
+                 font=self.font_h3,
+                 bg=self.colors["card"],
+                 fg=self.colors["blue"]).pack(pady=15)
+
+        self.log = tk.Text(log,
+                           bg="#FFFFFF",
+                           fg=self.colors["blue"],
+                           font=("Consolas", 14),
+                           state="disabled",
+                           borderwidth=0)
+        self.log.pack(fill="both", expand=True, padx=12, pady=10)
+
+        self.select_room("ENTRY")
+
+    # ================= ROOM BUTTONS =================
+    def create_room_buttons(self):
+
+        for w in self.room_frame.winfo_children():
+            w.destroy()
+
+        for room in self.rooms:
+
+            btn = tk.Button(self.room_frame,
+                            text=room,
+                            font=("Helvetica", 15, "bold"),
+                            bg="#FFFFFF",
+                            fg=self.colors["blue"],
+                            relief="flat",
+                            bd=0,
+                            padx=10,
+                            pady=12,
+                            activebackground=self.colors["blue"],
+                            activeforeground="white",
+                            command=lambda r=room: self.select_room(r))
+
+            btn.pack(fill="x", padx=12, pady=7)
+
+    # ================= LOGIC =================
+    def change_suite(self, event=None):
+        self.create_room_buttons()
+        self.select_room("ENTRY")
+
+    def select_room(self, room):
+
+        suite = self.selected_suite.get()
+        key = f"{suite} - {room}"
+        self.current_room = key
+
+        self.title_lbl.config(text=f"{suite} • {room}")
+
+        data = self.rooms_data[key]
+
+        self.labels["Ceiling Light"].config(text=f"{data['lights']['Ceiling']}%")
+        self.labels["Floor Lamp"].config(text=f"{data['lights']['Floor lamp']}%")
+        self.labels["Accent Light"].config(text=f"{data['lights']['Accent']}%")
+        self.labels["Reading Light"].config(text=f"{data['lights']['Reading']}%")
+
+        self.labels["Climate"].config(text=f"{data['climate']}°")
+        self.labels["Audio"].config(text=f"{data['audio']}%")
+        self.labels["Blinds"].config(text=f"{data['blinds']}%")
+
+        self.scene_lbl.config(text=data["active_scene"].upper())
+        self.add_log("SYSTEM", f"{suite} - {room}")
+
+    def update_clock(self):
+        self.clock_lbl.config(text=datetime.now().strftime("%d/%m/%Y  %H:%M:%S"))
+        self.root.after(1000, self.update_clock)
 
     def add_log(self, src, msg):
-        time = datetime.now().strftime("%H:%M:%S")
-        self.log_box.configure(state="normal")
-        self.log_box.insert("end", f"[{time}] {src}:\n> {msg}\n\n")
-        self.log_box.see("end")
-        self.log_box.configure(state="disabled")
+        self.log.config(state="normal")
+        self.log.insert("end",
+                        f"[{datetime.now().strftime('%H:%M:%S')}] {src}: {msg}\n")
+        self.log.see("end")
+        self.log.config(state="disabled")
+
 
 if __name__ == "__main__":
     root = tk.Tk()
