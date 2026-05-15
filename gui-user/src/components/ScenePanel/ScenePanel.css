@@ -1,0 +1,140 @@
+.scenes-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+  position: relative;   /* for the fade overlay */
+  flex-shrink: 0;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-3, #73706c);
+}
+
+.eyebrow .bar {
+  flex: 1;
+  height: 1px;
+  background: var(--line-2, rgba(0, 0, 0, 0.08));
+}
+
+.eyebrow .scene-count {
+  font-family: 'Geist Mono', monospace;
+  color: var(--ink-4, #9a9895);
+}
+
+/* ── Scrollable row ── */
+.scenes-row {
+  display: flex;
+  gap: 8px;
+  /* native horizontal scroll — touch & mouse wheel both work */
+  overflow-x: auto;
+  overflow-y: hidden;
+  /* smooth momentum on iOS */
+  -webkit-overflow-scrolling: touch;
+  /* hide scrollbar on all browsers */
+  scrollbar-width: none;
+  padding-bottom: 4px;   /* breathing room so box-shadow isn't clipped */
+  cursor: grab;
+  /* don't let children shrink — they must all be visible and scrollable */
+  flex-wrap: nowrap;
+}
+
+.scenes-row::-webkit-scrollbar {
+  display: none;
+}
+
+.scenes-row:active {
+  cursor: grabbing;
+}
+
+/* ── Individual scene card ── */
+.scene-btn {
+  appearance: none;
+  background: var(--paper-2, rgba(255, 255, 255, 0.5));
+  border: 0.5px solid var(--line-2, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  padding: 12px 16px;
+  /* fixed width so cards don't squish on small containers */
+  min-width: 110px;
+  flex: 0 0 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  cursor: pointer;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s cubic-bezier(0.3, 0.7, 0.4, 1),
+              box-shadow 0.18s ease,
+              border-color 0.18s ease,
+              background 0.18s ease;
+  /* prevent text selection while dragging */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.scene-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.scene-btn.active {
+  border-color: var(--accent, #B65B3A);
+  box-shadow: 0 0 0 1px var(--accent, #B65B3A) inset,
+              0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+.scene-ic {
+  width: 18px;
+  height: 18px;
+  margin-bottom: 4px;
+  color: var(--ink-2, #4d4b48);
+  flex-shrink: 0;
+}
+
+.scene-btn.active .scene-ic {
+  color: var(--accent, #B65B3A);
+}
+
+.scene-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink, #1C1814);
+  white-space: nowrap;
+}
+
+.scene-desc {
+  font-size: 10px;
+  color: var(--ink-4, #9a9895);
+  white-space: nowrap;
+}
+
+/* Right-edge fade hint — shows there are more scenes to scroll to */
+.scenes-fade {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  /* match the height of the scenes row */
+  height: calc(100% - 28px);   /* subtract eyebrow height */
+  width: 32px;
+  background: linear-gradient(to right, transparent, var(--paper-2, rgba(255,255,255,0.5)));
+  pointer-events: none;
+  border-radius: 0 12px 12px 0;
+}
+
+/* Ripple animation on scene activate */
+@keyframes sceneRipple {
+  0%   { background-color: var(--accent-soft, rgba(182, 91, 58, 0.15)); }
+  100% { background-color: var(--paper-2, rgba(255, 255, 255, 0.5)); }
+}
+
+.scene-btn.ripple {
+  animation: sceneRipple 0.7s ease-out;
+}

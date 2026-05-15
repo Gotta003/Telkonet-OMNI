@@ -1,0 +1,245 @@
+.params-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-2, rgba(255, 255, 255, 0.5));
+  border: 0.5px solid var(--line-2, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  min-height: 200px;
+}
+
+.params-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--ink-4, #9a9895);
+  text-align: center;
+  gap: 12px;
+  padding: 40px 0;
+}
+
+.empty-icon svg {
+  width: 24px;
+  height: 24px;
+  opacity: 0.5;
+}
+
+.empty-hint {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.params-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.params-head .title .name {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--ink, #1C1814);
+}
+
+.params-head .title .sub {
+  font-size: 12px;
+  color: var(--ink-4, #9a9895);
+  margin-left: 6px;
+}
+
+.pwr {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ink-3, #73706c);
+}
+
+.pwr-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ink-5, #d4d4d4);
+  transition: all 0.3s;
+}
+
+.pwr-dot.active {
+  background: var(--good, #34c759);
+  box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.2);
+}
+
+.params-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Fixture Section */
+.fix-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.fix-section-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--ink-3, #73706c);
+}
+
+.fix-section-head .ic svg {
+  width: 14px;
+  height: 14px;
+}
+
+.fix-section-head .bar {
+  flex: 1;
+  height: 1px;
+  background: var(--line-2, rgba(0, 0, 0, 0.08));
+}
+
+.fix-btn-mini {
+  background: transparent;
+  border: 1px solid var(--line-2, rgba(0, 0, 0, 0.1));
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--ink-3, #73706c);
+}
+
+.fix-btn-mini:hover {
+  background: var(--line-2, rgba(0, 0, 0, 0.05));
+}
+
+/* Individual Fixture Row */
+.fx-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0;
+  transition: opacity 0.2s;
+}
+
+.fx-row.selected {
+  background: rgba(0,0,0,0.02);
+  border-radius: 6px;
+}
+
+.fx-toggle {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  border: 1px solid var(--line-2, rgba(0,0,0,0.1));
+  background: var(--paper, #fff);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.fx-glyph {
+  width: 12px;
+  height: 12px;
+  background: currentColor;
+  border-radius: 50%;
+  opacity: 0.5;
+}
+
+.fx-row.on .fx-glyph {
+  background: #fff;
+  opacity: 1;
+}
+
+.fx-name {
+  width: 80px;
+  font-size: 12px;
+  color: var(--ink-2, #4d4b48);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fx-track {
+  flex: 1;
+  height: 24px;
+  position: relative;
+  cursor: ew-resize;
+}
+
+.fx-track::before {
+  content: '';
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--line-2, rgba(0, 0, 0, 0.08));
+  border-radius: 2px;
+}
+
+.fx-fill {
+  position: absolute;
+  top: 10px;
+  left: 0;
+  height: 4px;
+  border-radius: 2px;
+  pointer-events: none;
+}
+
+.fx-thumb {
+  position: absolute;
+  top: 6px;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 2px solid var(--line-2, rgba(0, 0, 0, 0.2));
+  border-radius: 50%;
+  transform: translateX(-50%);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  pointer-events: none;
+}
+
+.fx-val {
+  width: 36px;
+  text-align: right;
+  font-size: 12px;
+  font-family: 'Geist Mono', monospace;
+  color: var(--ink-2, #4d4b48);
+}
+
+.nosel {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cap-summary {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.cap-missing {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  text-transform: uppercase;
+  color: var(--ink-4, #9a9895);
+}
+
+.cap-missing svg {
+  width: 10px;
+  height: 10px;
+}

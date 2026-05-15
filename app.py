@@ -1,30 +1,35 @@
-from flask import Flask, render_template_string, jsonify
+from flask import Flask, render_template_string, jsonify, Response
 import serial
 import threading
 import time
-from interface import HTML_UI
 from pathlib import Path
 
 BASE_DIR=Path(__file__).resolve().parent
 LOG_FILE=BASE_DIR/"arduino_thread.log"
+html_path=BASE_DIR/"gui-user/dist/index.html"
+
+def load_ui():
+    with open(html_path, "r", encoding="utf-8") as file:
+        return file.read()
+    
+HTML_UI=load_ui()
+print("Loaded Interface")
 
 app=Flask(__name__)
-arduino=None
 user_ports={
     "matteo": ["/dev/ttyACM0", "/dev/ttyACM1", "/dev/ttyACM2", "/dev/ttyACM3"],
     "mike": ["COM3"],
 }
 def connect_arduino():
-    global arduino
     for user, ports in user_ports.items():
         for port in ports:
             try:
-                # Proviamo la connessione
+                # Try connection
                 conn = serial.Serial(port=port, baudrate=9600, timeout=1)
                 with open(LOG_FILE, "w") as f:
-                    f.write(f"Connected to {user}'s port: {port}")
-                time.sleep(2) # Attesa reset Arduino
-                return conn # Restituisce l'oggetto connesso
+                    f.write(f"Connected to {user}'s port: {port}\n")
+                time.sleep(2) 
+                return conn
             except (serial.SerialException, OSError):
                 continue
     return None
@@ -49,7 +54,11 @@ def listen_arduino():
                     if "|" in line:
                         parts=line.split("|")
                         for part in parts:
-                            key, value=part.split(":")
+                            if ":" not in part:
+                                continue
+                            key, value=part.split(":", 1)
+                            key=key.strip()
+                            value=value.strip()
                             if "Temperature" in key: 
                                 sensor_data["temperature"]=value.replace("°C", "").strip()
                             if "Humidity" in key:
@@ -57,19 +66,25 @@ def listen_arduino():
                             if key=="Light":
                                 sensor_data["light"]=value.strip()
             except Exception as e:
-                print(f"Error Parsing: {e}")
+                with open(LOG_FILE, "a") as f:
+                    f.write(f"{time.strftime('%H:%M:%S')} ERROR: {e}\n")
         time.sleep(0.5)
         
 @app.route('/')
 def dashboard():
-    return render_template_string(HTML_UI)
+    content=load_ui()
+    return Response(content, mimetype='text/html')
 
-@app.route('/comando/<cmd>')
-def send_comand(cmd):
+@app.route("/comando/<cmd>")
+def send_command(cmd):
     if arduino and arduino.is_open:
-        arduino.write(f"{cmd}\n".encode())
-        return jsonify(status="success", sent=cmd)
-    return jsonify(status="error", msg="Arduino not connected"), 500
+        try:
+            arduino.write(f"{cmd}\n".encode())
+            return jsonify(status="success", sent=cmd)
+        except serial.SerialException as e:
+            return jsonify(status="error", msg=str(e)), 500
+    return jsonify(status="error", msg="Arduino not connected"), 50
+
 @app.route('/api/dati')
 def gather_data():
     return jsonify(sensor_data)

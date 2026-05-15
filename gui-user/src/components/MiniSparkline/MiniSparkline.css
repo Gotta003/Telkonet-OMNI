@@ -1,0 +1,20 @@
+.spark {
+  display: block;
+  overflow: visible;
+}
+
+.spark-area {
+  stroke: none;
+}
+
+.spark-line {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.spark-dot {
+  stroke: var(--paper, #ffffff);
+  stroke-width: 1px;
+}

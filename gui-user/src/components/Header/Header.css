@@ -1,0 +1,9 @@
+/* Header layout is defined in App.css.
+   This file adds any header-specific overrides. */
+
+/* Tighter logo on small screens */
+@media (max-width: 900px) {
+  .logo-title { display: none; }
+  .nav-btn span { display: none; }
+  .nav-btn { padding: 7px 9px; }
+}

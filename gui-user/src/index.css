@@ -1,0 +1,16 @@
+/* index.css — reset only, all tokens and layout live in App.css */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+  /* Remove the original 1126px centered column layout */
+}

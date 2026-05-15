@@ -1,0 +1,211 @@
+.settings-page {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--bg, #f4f2ee);
+  padding: 0 0 60px;
+}
+
+.settings-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  padding: 40px 32px;
+}
+
+/* ── Hero ── */
+.settings-hero {
+  margin-bottom: 40px;
+  padding-bottom: 28px;
+  border-bottom: 1.5px solid var(--border, #ddd9d2);
+}
+
+.settings-title {
+  font-family: var(--font-serif, 'Playfair Display', Georgia, serif);
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--text, #1a1614);
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.settings-sub {
+  font-size: 15px;
+  color: var(--text-dim, #6b6560);
+  line-height: 1.5;
+}
+
+/* ── Section ── */
+.set-section {
+  margin-bottom: 36px;
+  background: var(--surface, #fff);
+  border: 1.5px solid var(--border, #ddd9d2);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.set-section-title {
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: var(--text-muted, #9a948e);
+  padding: 14px 20px 10px;
+  border-bottom: 1px solid var(--border, #ddd9d2);
+  background: var(--surface-2, #f9f8f6);
+}
+
+/* ── Row ── */
+.set-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--border, #ddd9d2);
+}
+
+.set-row:last-child {
+  border-bottom: none;
+}
+
+.set-row-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.set-row-label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text, #1a1614);
+}
+
+.set-row-hint {
+  font-size: 12px;
+  color: var(--text-muted, #9a948e);
+  line-height: 1.4;
+}
+
+.set-row-control {
+  flex-shrink: 0;
+}
+
+/* ── Segmented control ── */
+.seg-ctrl {
+  display: flex;
+  background: var(--surface-2, #f9f8f6);
+  border: 1.5px solid var(--border, #ddd9d2);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.seg-btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 7px 14px;
+  border-radius: 7px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim, #6b6560);
+  cursor: pointer;
+  transition: all 0.18s ease;
+  white-space: nowrap;
+}
+
+.seg-btn:hover {
+  background: var(--surface, #fff);
+  color: var(--text, #1a1614);
+}
+
+.seg-btn.active {
+  background: var(--surface, #fff);
+  color: var(--accent-dim, #a07828);
+  font-weight: 600;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.10);
+}
+
+.seg-icon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+/* ── Slider ── */
+.set-slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.set-slider {
+  width: 160px;
+  accent-color: var(--accent, #c8973a);
+  cursor: pointer;
+}
+
+.set-slider-val {
+  font-family: var(--font-mono, monospace);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-dim, #a07828);
+  min-width: 36px;
+  text-align: right;
+}
+
+/* ── Colour swatches ── */
+.colour-swatches {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2.5px solid transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+  outline: none;
+}
+
+.swatch:hover {
+  transform: scale(1.15);
+}
+
+.swatch.active {
+  border-color: var(--text, #1a1614);
+  transform: scale(1.2);
+  box-shadow: 0 0 0 2px var(--surface, #fff) inset;
+}
+
+/* ── Reset ── */
+.settings-reset {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.reset-btn {
+  padding: 10px 24px;
+  border-radius: 10px;
+  border: 1.5px solid var(--border, #ddd9d2);
+  background: var(--surface, #fff);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dim, #6b6560);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.reset-btn:hover {
+  border-color: var(--red, #dc2626);
+  color: var(--red, #dc2626);
+  background: rgba(220, 38, 38, 0.05);
+}

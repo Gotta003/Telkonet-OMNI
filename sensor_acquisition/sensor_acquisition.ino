@@ -1,27 +1,57 @@
 #include "DHT.h"
 #include <Adafruit_NeoPixel.h>
+#include <Stepper.h>
 //Temperature and Humidity Pin
 #define DHTPIN 2
 #define DHTTYPE DHT11
 //Light Pin
 #define LIGHTPIN A0
+//Buttons
+#define BUTTON_PIN A1
 //8 RGB LED
 #define LED_PIN 6
 #define LED_COUNT 8
+//Ultrasonic Sensor
+#define TRIG_PIN 12
+#define ECHO_PIN 13
+//Motor Stepper
+#define IN1_PIN 11
+#define IN2_PIN 10
+#define IN3_PIN 9
+#define IN4_PIN 8
+//Buzzer
+#define BUZZER_PIN 3
 
 const int serPin=11;
 const int rclkPin=8;
-const int srclkPin=12;
+const int srclkPin=7;
+//Init Variables
 const int sensorPin=LIGHTPIN;
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB+NEO_KHZ800);
 int sensorValue=0;
 bool isGreen[LED_COUNT];
 unsigned long lastSensorRead=0;
+//Motor
+const int stepsPerRevolution=2048;
+Stepper myStepper(stepsPerRevolution, IN1_PIN, IN3_PIN, IN2_PIN, IN4_PIN);
+
+void playFeedback() {
+  tone(BUZZER_PIN, 4000, 50);
+}
 
 void setup() {
   Serial.begin(9600);
+  //DHT Init
   dht.begin();
+  //Setup Ultrasonic
+  pinMode(TRIG_PIN, OUTPUT);
+  pinMode(ECHO_PIN, INPUT);
+  //Setup Motor
+  myStepper.setSpeed(12);
+  //Buzzer
+  pinMode(BUZZER_PIN, OUTPUT);
+  //Shift registers 8 LED RGB
   pinMode(serPin, OUTPUT);
   pinMode(rclkPin, OUTPUT);
   pinMode(srclkPin, OUTPUT);
@@ -36,6 +66,7 @@ void setup() {
 }
 
 void loop() {
+  //SENSORS
   if(millis()-lastSensorRead>=2000) {
     float humidity=dht.readHumidity();
     float tempC=dht.readTemperature();
@@ -44,18 +75,41 @@ void loop() {
       return;
     }
     sensorValue=analogRead(sensorPin);
-    Serial.print("Humidity: ");
-    Serial.print(humidity);
-    Serial.print("% | ");
-    Serial.print("Temperature: ");
-    Serial.print(tempC);
-    Serial.print("°C | ");
-    Serial.print("Light Level Value: ");
-    Serial.println(sensorValue);
+    long duration;
+    int distance;
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+    duration=pulseIn(ECHO_PIN, HIGH);
+    distance=duration*0.034/2;
+    if (!isnan(humidity) && !isnan(tempC)) {
+      Serial.print("H: "); Serial.print(humidity); Serial.print("% | ");
+      Serial.print("T: "); Serial.print(tempC); Serial.print("°C | ");
+    }
+    Serial.print("Light: "); Serial.print(sensorValue); Serial.print(" | ");
+    Serial.print("Dist: "); Serial.print(distance); Serial.println("cm");
     lastSensorRead=millis();
+  }
+  //BUTTONS
+  int btnVal=analogRead(BUTTON_PIN);
+  if(btnVal>100) {
+    playFeedback();
+    Serial.print("BUTTON PRESSED: "); Serial.println(btnVal);
   }
   if(Serial.available()>0) {
     String cmd=Serial.readStringUntil("\n");
+    playFeedback();
+    if(cmd=="OPEN") {
+      Serial.println("Action: Opening Curtains");
+      myStepper.step(1024);
+    }
+    else if (cmd=="CLOSE") {
+      Serial.println("Action: Closing Curtains");
+      myStepper.step(-1024);
+    }
+
     if(cmd=="H"){//ALL ON
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(0, 255, 0));

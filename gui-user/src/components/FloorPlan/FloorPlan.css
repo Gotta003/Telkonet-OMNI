@@ -1,0 +1,102 @@
+/* FloorPlan.css */
+
+.fp-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  min-height: 300px;
+}
+
+/* ── Rooms ── */
+.fp-room {
+  cursor: pointer;
+}
+
+.fp-room-fill {
+  fill: #f7f4ee;
+  stroke: rgba(28, 24, 18, 0.14);
+  stroke-width: 1.25px;
+  /* smooth colour transition when light level changes — no movement */
+  transition: fill 0.4s ease, stroke 0.3s ease;
+}
+
+.fp-room.has-light .fp-room-fill {
+  fill: rgba(200, 151, 58, 0.18);
+}
+
+.fp-room.level-hi .fp-room-fill {
+  fill: rgba(200, 151, 58, 0.38);
+}
+
+.fp-room.selected .fp-room-fill {
+  fill: rgba(200, 151, 58, 0.13);
+  stroke: var(--accent, #c8973a);
+  stroke-width: 2px;
+}
+
+/* ── Labels ── */
+.fp-room-label {
+  font-family: 'JetBrains Mono', 'Geist Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.10em;
+  fill: #6b6258;
+  text-transform: uppercase;
+  text-anchor: middle;
+  pointer-events: none;
+  transition: fill 0.2s ease;
+}
+
+.fp-room.selected .fp-room-label {
+  fill: var(--accent-dim, #a07828);
+}
+
+/* ── Room type icon ── */
+.fp-room-icon {
+  pointer-events: none;
+  color: #8a8278;
+  transition: color 0.2s ease;
+}
+
+.fp-room.selected .fp-room-icon {
+  color: var(--accent, #c8973a);
+}
+
+.fp-room.has-light .fp-room-icon {
+  color: #3a332b;
+}
+
+/* ── Walls ── */
+.fp-walls {
+  fill: none;
+  stroke: #5a5048;
+  stroke-width: 1.5px;
+  stroke-linejoin: miter;
+}
+
+/* ── Occupancy dot — static, no pulse ── */
+.fp-occ-dot {
+  fill: var(--good, #16a34a);
+  /* no animation — a calm solid dot is enough */
+}
+
+/* ── Fixtures ── */
+.fp-fixture {
+  cursor: pointer;
+}
+
+/* Smooth colour/opacity transition when toggled — no movement */
+.fp-fixture > * {
+  transition: fill 0.35s ease, stroke 0.35s ease, opacity 0.35s ease;
+}
+
+/* ON state: glow halo opacity scales with intensity via inline style in JSX.
+   No keyframe animation — the halo is always static at whatever opacity
+   the current value (0–100) produces. */
+.fp-fixture.on > circle:first-child {
+  /* intentionally no animation */
+}
+
+/* Selected fixture: dashed ring, also static */
+.fp-fixture.selected circle:last-child {
+  /* the <animate> tag inside JSX is removed in FloorPlan.jsx update */
+}

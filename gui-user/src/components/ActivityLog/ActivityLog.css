@@ -1,0 +1,94 @@
+.log-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--paper-2, rgba(255, 255, 255, 0.5));
+  border: 0.5px solid var(--line-2, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  width: 100%;
+}
+
+.log-card .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: var(--ink-3, #73706c);
+  margin-bottom: 16px;
+}
+
+.log-card .eyebrow .bar {
+  flex: 1;
+  height: 1px;
+  background: var(--line-2, rgba(0, 0, 0, 0.08));
+}
+
+.log-card .log-count {
+  font-family: 'Geist Mono', monospace;
+  color: var(--ink-4, #9a9895);
+}
+
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.log-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.log-row .time {
+  font-family: 'Geist Mono', monospace;
+  color: var(--ink-4, #9a9895);
+  font-size: 11px;
+  min-width: 58px;
+}
+
+.log-row .log-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+}
+
+.log-row .log-ic svg {
+  width: 12px;
+  height: 12px;
+}
+
+.log-row .msg {
+  color: var(--ink-2, #4d4b48);
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex: 1;
+}
+
+/* Row Type Variants */
+.log-row.info .log-ic {
+  color: var(--ink-4, #9a9895);
+}
+
+.log-row.success .log-ic {
+  color: var(--good, #34c759);
+}
+
+.log-row.error .log-ic {
+  color: var(--bad, #ff3b30);
+}
+.log-row.error .msg {
+  color: var(--bad, #ff3b30);
+}
+
+.log-row.action .log-ic {
+  color: var(--accent, #B65B3A);
+}

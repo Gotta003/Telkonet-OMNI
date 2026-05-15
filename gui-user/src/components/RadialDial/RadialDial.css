@@ -1,0 +1,64 @@
+.dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.dial-svg {
+  display: block;
+  overflow: visible;
+}
+
+.dial-bg {
+  fill: none;
+  stroke: var(--line-2, rgba(0, 0, 0, 0.08));
+  stroke-linecap: round;
+}
+
+.dial-arc {
+  fill: none;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 0.4s cubic-bezier(0.3, 0.7, 0.4, 1);
+}
+
+.dial-ticks line {
+  stroke: var(--line-2, rgba(0, 0, 0, 0.1));
+  stroke-width: 2;
+  stroke-linecap: round;
+  transition: stroke 0.3s ease;
+}
+
+.dial-center {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none; /* Let clicks pass through if needed */
+}
+
+.dial-value {
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  color: var(--ink, #1C1814);
+  font-family: 'Geist Mono', monospace; /* Matching your font stack */
+}
+
+.dial-unit {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--ink-4, #9a9895);
+  margin-top: 2px;
+}
+
+.dial-label {
+  margin-top: 4px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-4, #9a9895);
+}

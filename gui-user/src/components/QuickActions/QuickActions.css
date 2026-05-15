@@ -1,0 +1,84 @@
+.actions-card {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: var(--paper-2, rgba(255, 255, 255, 0.5));
+  border: 0.5px solid var(--line-2, rgba(0, 0, 0, 0.08));
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  width: 100%;
+}
+
+.actions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+.qa-btn {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.3, 0.7, 0.4, 1);
+  white-space: nowrap;
+}
+
+.qa-ic {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.qa-ic svg {
+  width: 14px;
+  height: 14px;
+}
+
+.qa-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+
+/* Button Variants */
+.qa-default {
+  background: var(--paper, #ffffff);
+  border: 1px solid var(--line-2, rgba(0, 0, 0, 0.08));
+  color: var(--ink-2, #4d4b48);
+}
+
+.qa-default:hover {
+  background: rgba(0, 0, 0, 0.02);
+  border-color: var(--line, rgba(0, 0, 0, 0.15));
+}
+
+.qa-primary {
+  background: var(--accent-soft, rgba(182, 91, 58, 0.1));
+  border: 1px solid transparent;
+  color: var(--accent, #B65B3A);
+}
+
+.qa-primary:hover {
+  background: var(--accent, #B65B3A);
+  color: #ffffff;
+}
+
+.qa-danger {
+  background: rgba(239, 68, 68, 0.08);
+  border: 1px solid transparent;
+  color: #ef4444;
+}
+
+.qa-danger:hover {
+  background: #ef4444;
+  color: #ffffff;
+}
