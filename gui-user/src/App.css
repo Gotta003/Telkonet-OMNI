@@ -374,39 +374,58 @@ html, body, #root {
 .panel-ctrl::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 /* ============================================================
-   VIEW — HOME: floor plan fills everything
+   VIEW — HOME: floor plan fills everything edge-to-edge
+   panel-home is a flex SIBLING (not fixed), so the SVG
+   naturally only occupies the left portion when it opens
    ============================================================ */
+.view-home .body {
+  /* no position:relative needed — panel is in-flow */
+}
+
 .view-home .panel-map {
-  flex-basis: 100%;
+  flex: 1 1 0;
+  min-width: 0;
   padding: 0;
+  gap: 0;
+}
+
+.view-home .panel-map-header {
+  display: none;
 }
 
 .view-home .blueprint {
+  flex: 1 1 0;
   border-radius: 0;
   border: none;
   box-shadow: none;
   padding: 0;
+  background: var(--bg);
 }
 
-/* Home slide-in panel */
+/* Home panel — in-flow flex sibling, animates width */
 .panel-home {
-  position: fixed;
-  top: 68px;
-  right: 0;
-  bottom: 0;
-  width: 380px;
-  max-width: 90vw;
+  flex: 0 0 0px;
+  width: 0;
+  min-height: 0;
+  overflow: hidden;
   background: var(--surface);
-  border-left: 2px solid var(--border);
-  box-shadow: -8px 0 32px rgba(0,0,0,0.12);
-  padding: 20px 22px 32px;
-  overflow-y: auto;
-  transform: translateX(100%);
-  transition: transform var(--anim-speed) cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 100;
+  border-left: 0px solid var(--border);
+  padding: 0;
+  /* animate the width expansion */
+  transition:
+    flex-basis var(--anim-speed) cubic-bezier(0.4, 0, 0.2, 1),
+    width      var(--anim-speed) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.panel-home.open { transform: translateX(0); }
+.panel-home.open {
+  flex: 0 0 420px;
+  width: 420px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-left-width: 2px;
+  padding: 20px 22px 32px;
+  box-shadow: -4px 0 20px rgba(0,0,0,0.06);
+}
 
 .panel-home-header {
   display: flex;

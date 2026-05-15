@@ -1,2 +1,28 @@
 .omni_env/
 arduino_thread.log
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.env
+venv/
+.venv/
+*.egg-info/
+
+# Node / React
+gui-user/node_modules/
+gui-user/dist/
+gui-user/.vite/
+
+# Jupyter
+notebooks/.ipynb_checkpoints/
+notebooks/*.ipynb~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.env
+config.local.*

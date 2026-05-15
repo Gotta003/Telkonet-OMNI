@@ -322,7 +322,7 @@ export default function App() {
                             </div>
                         )}
                         <div className="blueprint">
-                            <FloorPlan selectedId={selectedRoom} onSelect={selectRoom} roomState={roomState} selectedFixture={selectedFixture} onSelectFixture={selectRoomAndFixture} homeMode={view==='home'} onDismiss={view==='home' ? dismissSelection : undefined}/>
+                            <FloorPlan selectedId={selectedRoom} onSelect={selectRoom} roomState={roomState} selectedFixture={selectedFixture} onSelectFixture={selectRoomAndFixture} homeMode={view==='home'} onDismiss={view==='home' ? dismissSelection : undefined} panelWidth={homePanelOpen ? 380 :0}/>
                             {view==='dashboard' &&(
                                 <>
                                     <div className='section-divider'/>

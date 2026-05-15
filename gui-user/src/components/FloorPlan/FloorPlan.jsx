@@ -90,7 +90,7 @@ const DOORS_D = `
   M 540 240 L 580 240
 `;
 
-export default function FloorPlan({selectedId, onSelect, roomState, selectedFixture, onSelectFixture, homeMode=false, onDismiss,}) {
+export default function FloorPlan({selectedId, onSelect, roomState, selectedFixture, onSelectFixture, homeMode=false, onDismiss, panelWidth=0}) {
     const initStates=()=>{
         const s={};
         ROOMS.forEach((r)=>{s[r.id]={...IDENTITY};});
@@ -103,19 +103,19 @@ export default function FloorPlan({selectedId, onSelect, roomState, selectedFixt
     const targetRef=useRef(null);
     const svgRef=useRef(null);
 
-    const getSvgAvailableW=()=>{
-        if(!svgRef.current) {
+    {/*const getSvgAvailableW=()=>{
+        if(!svgRef.current || panelWidth===0) {
             return W;
         }
-        const rect=svgRef.current.getBoundingClientRect();
-        if(rect.width===0) {
+        const svgPxW=svgRef.current.getBoundingClientRect().width;
+        if(svgPxW===0) {
             return W;
         }
-        const pxPerUnit=rect.width/W;
-        const panelPxW=380;
-        const available=W-(panelPxW/pxPerUnit);
-        return Math.max(200, available);
-    };
+        const pxPerSvgUnit=svgPxW/W;
+        return Math.max(200, W-(panelWidth/pxPerSvgUnit));
+    };*/}
+
+    const getSvgAvailableW = () => W;
 
     const buildTargets=(selId)=>{
         const targets={};
@@ -172,14 +172,14 @@ export default function FloorPlan({selectedId, onSelect, roomState, selectedFixt
     const isIsolated=homeMode && !!selectedId;
 
     return (
-        <svg className={`fp-svg${isIsolated ? ' fp-isolated' : ''}`} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet">
+        <svg className={`fp-svg${isIsolated ? ' fp-isolated' : ''}`} viewBox={`0 0 ${W} ${H}`} preserveAspectRatio="xMidYMid meet" onClick={isIsolated ? onDismiss : undefined} style={{cursor: isIsolated ? 'zoom-out' : 'default'}}>
             <defs>
                 <pattern id="fp-tile" width="20" height="20" patternUnits="userSpaceOnUse">
                     <rect width="20" height="20" fill="transparent"/>
                     <circle cx="10" cy="10" r="0.6" fill="rgba(28,24,18,0.06)"/>
                 </pattern>
             </defs>
-            <rect x="0" y="0" width={W} height={H} fill={isIsolated ? 'rgba(244,242,238,0.92)' : 'url(#fp-tile)'} onClick={isIsolated ? onDismiss : undefined} style={{cursor: isIsolated ? 'zoom-out' : 'default'}}/>
+            <rect x="0" y="0" width={W} height={H} fill={isIsolated ? 'rgba(244,242,238,0.92)' : 'url(#fp-tile)'}/>
             {!isIsolated && (
                 <rect x="0" y="0" width={W} height={H} fill="url(#fp-tile)" style={{pointerEvents: 'none'}}/>
             )}
