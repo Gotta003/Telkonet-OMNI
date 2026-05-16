@@ -211,7 +211,7 @@ export default function App() {
     const sendCommand=(cmd, label) => {
         addLog(`CMD -> ${cmd}`, 'info');
         fetch(`/api/command/${cmd}`).then((res)=>{
-            if(!res.ok) throw new Error("HTTP ${res.status}");
+            if(!res.ok) throw new Error(`HTTP ${res.status}`);
             return res.json();
         }).then(()=>{
             showToast(`✓ ${label}`, 'success');

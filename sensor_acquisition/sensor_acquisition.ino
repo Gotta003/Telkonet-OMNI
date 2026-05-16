@@ -68,6 +68,7 @@ void setup() {
 void loop() {
   //SENSORS
   if(millis()-lastSensorRead>=2000) {
+    lastSensorRead=millis();
     float humidity=dht.readHumidity();
     float tempC=dht.readTemperature();
     if (isnan(humidity) || isnan(tempC)) {
@@ -84,57 +85,90 @@ void loop() {
     digitalWrite(TRIG_PIN, LOW);
     duration=pulseIn(ECHO_PIN, HIGH);
     distance=duration*0.034/2;
-    if (!isnan(humidity) && !isnan(tempC)) {
-      Serial.print("H: "); Serial.print(humidity); Serial.print("% | ");
-      Serial.print("T: "); Serial.print(tempC); Serial.print("°C | ");
+    Serial.print("DATA");
+    Serial.print("|temperature:");
+    if (!isnan(tempC)) {
+      Serial.print(tempC, 1);
     }
-    Serial.print("Light: "); Serial.print(sensorValue); Serial.print(" | ");
-    Serial.print("Dist: "); Serial.print(distance); Serial.println("cm");
-    lastSensorRead=millis();
+    else {
+      Serial.print("--");
+    }
+    Serial.print("|humidity:"); 
+    if (!isnan(humidity)) {
+      Serial.print(humidity, 1);
+    }
+    else {
+      Serial.print("--");
+    }
+    Serial.print("light:"); 
+    Serial.print(sensorValue);
+    Serial.print("|distance:");
+    Serial.print(distance);
   }
   //BUTTONS
-  int btnVal=analogRead(BUTTON_PIN);
-  if(btnVal>100) {
-    playFeedback();
-    Serial.print("BUTTON PRESSED: "); Serial.println(btnVal);
+  if(millis()-lastButtonRead>=50) {
+    lastButtonRead=millis();
+    int btnVal=analogRead(BUTTON_PIN);
+    bool pressed=(btnVal>100);
+    if(pressed && !lastButtonState) {
+      //Rising Edge
+      playFeedback();
+      Serial.print("EVENT|button:");
+      Serial.println(btnVal);
+    }
+    lastButtonState=pressed;
   }
+  //Serial command Handler
   if(Serial.available()>0) {
-    String cmd=Serial.readStringUntil("\n");
+    String cmd=Serial.readStringUntil('\n');
+    cmd.trim();
     playFeedback();
     if(cmd=="OPEN") {
-      Serial.println("Action: Opening Curtains");
+      Serial.println("ACK|OPEN|Opening curtains");
       myStepper.step(1024);
     }
     else if (cmd=="CLOSE") {
-      Serial.println("Action: Closing Curtains");
+      Serial.println("ACK|CLOSE|Closing curtains");
       myStepper.step(-1024);
     }
-
-    if(cmd=="H"){//ALL ON
+    else if(cmd=="H"){//ALL ON
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(0, 255, 0));
       }
+      Serial.println("ACK|H|All lights on");
     }
     else if(cmd=="L") {//ALL OFF
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(50, 0, 0));
       }
+      Serial.println("ACK|L|All lights off");
     }
     else if(cmd=="N") {//NIGHT MODE
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(0, 0, 50));
       }
+      Serial.println("ACK|N|Night mode");
     }
     else if (cmd.startsWith("D")) {//TOGLLE LED 0-7
       int ledIndex=cmd.substring(1).toInt();
-      if(!isGreen[ledIndex]) {
-        strip.setPixelColor(ledIndex, strip.Color(0, 255, 0));
-        isGreen[ledIndex]=true;
+      if(ledIndex>=0 && ledIndex<LED_COUNT) {
+        if(!isGreen[ledIndex]) {
+          strip.setPixelColor(ledIndex, strip.Color(0, 255, 0));
+          isGreen[ledIndex]=true;
+        }
+        else {
+          strip.setPixelColor(ledIndex, strip.Color(50, 0, 0));
+          isGreen[ledIndex]=false;
+        }
+        Serial.print("ACK|D");
+        Serial.print(ledIndex);
+        Serial.print("|");
+        Serial.println(isGreen[ledIndex] ? "on" : "off");
       }
-      else {
-        strip.setPixelColor(ledIndex, strip.Color(50, 0, 0));
-        isGreen[ledIndex]=false;
-      }
+    }
+    else {
+      Serial.print("ERR|unknown command: ");
+      Serial.println(cmd);
     }
     strip.show();
   }
