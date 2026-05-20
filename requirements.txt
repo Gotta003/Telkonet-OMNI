@@ -7,3 +7,5 @@ markdown
 ipykernel
 pyserial
 flask
+requests
+sseclient-py
