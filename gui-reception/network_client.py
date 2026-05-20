@@ -95,6 +95,8 @@ def _sse_loop():
             client=sseclient.SSEClient(response)
             log.info("SSE stream connected")
             for event in client.events():
+                if not event.event or not event.data:
+                    continue
                 if event.event=="proximity":
                     _set_state("screenActive", event.data=="wake")
                     _fire("proximity", event.data)

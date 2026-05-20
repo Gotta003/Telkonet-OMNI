@@ -113,6 +113,12 @@ $PYTHON -c "import flask, serial" 2>/dev/null \
     || warn "Some packages may be missing - run pip install -r requirements.txt"
 mkdir -p "$LOG_DIR"
 
+if lsof -t -i:$BRIDGE_PORT &>/dev/null; then
+    warn "Port $BRIDGE_PORT is occupied. Cleaning ghost background workers..."
+    kill -9 $(lsof -t -i:$BRIDGE_PORT) 2>/dev/null || true
+    sleep 1
+fi
+
 #Start Bridge
 if $START_BRIDGE; then
     log "Starting bridge server..."

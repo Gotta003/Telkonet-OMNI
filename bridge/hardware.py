@@ -40,7 +40,7 @@ def get_arduino():
     return _arduino
 
 #SENSORS
-_sensor_lock=threading.Lock
+_sensor_lock=threading.Lock()
 _sensor_data={
     "temperature": "--",
     "humidity": "--",
