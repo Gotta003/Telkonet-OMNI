@@ -1,0 +1,550 @@
+19:01:58 [WARNING] Arduino not found - running offline
+19:01:58 [INFO] Arduino Listener Started
+19:01:58 [INFO] OMNI BRIDGE -> http://0.0.0.0:5000
+ * Serving Flask app 'app'
+ * Debug mode: off
+19:01:58 [INFO] [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.202.170.79:5000
+19:01:58 [INFO] [33mPress CTRL+C to quit[0m
+19:01:59 [INFO] 127.0.0.1 - - [20/May/2026 19:01:59] "GET /api/events HTTP/1.1" 200 -
+19:01:59 [ERROR] Exception on /api/state [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 136, in full_state
+    "sensors": hardware.get_sensor_data(),
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:01:59 [INFO] 127.0.0.1 - - [20/May/2026 19:01:59] "[35m[1mGET /api/state HTTP/1.1[0m" 500 -
+19:01:59 [INFO] 127.0.0.1 - - [20/May/2026 19:01:59] "GET /api/events HTTP/1.1" 200 -
+19:02:01 [ERROR] Exception on /api/state [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 136, in full_state
+    "sensors": hardware.get_sensor_data(),
+               ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:01 [INFO] 127.0.0.1 - - [20/May/2026 19:02:01] "[35m[1mGET /api/state HTTP/1.1[0m" 500 -
+19:02:17 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:17 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:17 [INFO] 127.0.0.1 - - [20/May/2026 19:02:17] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:17 [INFO] 127.0.0.1 - - [20/May/2026 19:02:17] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:17 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:17 [INFO] 127.0.0.1 - - [20/May/2026 19:02:17] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:20 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:20 [INFO] 127.0.0.1 - - [20/May/2026 19:02:20] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:22 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:22 [INFO] 127.0.0.1 - - [20/May/2026 19:02:22] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:24 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:24 [INFO] 127.0.0.1 - - [20/May/2026 19:02:24] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:26 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:26 [INFO] 127.0.0.1 - - [20/May/2026 19:02:26] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:28 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:28 [INFO] 127.0.0.1 - - [20/May/2026 19:02:28] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:30 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:30 [INFO] 127.0.0.1 - - [20/May/2026 19:02:30] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:32 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:32 [INFO] 127.0.0.1 - - [20/May/2026 19:02:32] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:34 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:34 [INFO] 127.0.0.1 - - [20/May/2026 19:02:34] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:35 [INFO] 10.202.170.79 - - [20/May/2026 19:02:35] "GET / HTTP/1.1" 200 -
+19:02:37 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:37 [INFO] 10.202.170.79 - - [20/May/2026 19:02:37] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:37 [INFO] 10.202.170.79 - - [20/May/2026 19:02:37] "GET /api/events HTTP/1.1" 200 -
+19:02:37 [INFO] 10.202.170.79 - - [20/May/2026 19:02:37] "GET /favicon.svg HTTP/1.1" 200 -
+19:02:39 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:39 [INFO] 10.202.170.79 - - [20/May/2026 19:02:39] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:41 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:41 [INFO] 10.202.170.79 - - [20/May/2026 19:02:41] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:43 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:43 [INFO] 10.202.170.79 - - [20/May/2026 19:02:43] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:45 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:45 [INFO] 10.202.170.79 - - [20/May/2026 19:02:45] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:47 [INFO] 10.202.170.79 - - [20/May/2026 19:02:47] "GET /api/events HTTP/1.1" 200 -
+19:02:47 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:47 [INFO] 10.202.170.79 - - [20/May/2026 19:02:47] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:49 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:49 [INFO] 10.202.170.79 - - [20/May/2026 19:02:49] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:51 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:51 [INFO] 10.202.170.79 - - [20/May/2026 19:02:51] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:53 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:53 [INFO] 10.202.170.79 - - [20/May/2026 19:02:53] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:53 [INFO] 10.202.170.79 - - [20/May/2026 19:02:53] "[36mGET /favicon.svg HTTP/1.1[0m" 304 -
+19:02:54 [INFO] 10.202.170.79 - - [20/May/2026 19:02:54] "GET /favicon.ico HTTP/1.1" 200 -
+19:02:55 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:55 [INFO] 10.202.170.79 - - [20/May/2026 19:02:55] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:57 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:57 [INFO] 10.202.170.79 - - [20/May/2026 19:02:57] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:02:59 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:02:59 [INFO] 10.202.170.79 - - [20/May/2026 19:02:59] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:03:01 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:03:01 [INFO] 10.202.170.79 - - [20/May/2026 19:03:01] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:03:03 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:03:03 [INFO] 10.202.170.79 - - [20/May/2026 19:03:03] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
+19:03:05 [ERROR] Exception on /api/dati [GET]
+Traceback (most recent call last):
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 1511, in wsgi_app
+    response = self.full_dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 919, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 917, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "/home/gotta-franco/Telkonet-OMNI/.omni_env/lib/python3.13/site-packages/flask/app.py", line 902, in dispatch_request
+    return self.ensure_sync(self.view_functions[rule.endpoint])(**view_args)  # type: ignore[no-any-return]
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/routes.py", line 50, in gather_data
+    return jsonify(hardware.get_sensor_data())
+                   ~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "/home/gotta-franco/Telkonet-OMNI/bridge/hardware.py", line 52, in get_sensor_data
+    with _sensor_lock:
+         ^^^^^^^^^^^^
+TypeError: 'type' object does not support the context manager protocol
+19:03:05 [INFO] 10.202.170.79 - - [20/May/2026 19:03:05] "[35m[1mGET /api/dati HTTP/1.1[0m" 500 -
