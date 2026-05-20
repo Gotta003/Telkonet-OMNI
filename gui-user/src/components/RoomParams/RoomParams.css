@@ -271,3 +271,89 @@
   width: 10px;
   height: 10px;
 }
+
+/* ── Curtain open/close buttons ────────────────────────────── */
+.curtain-control {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.curtain-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--ink-3, #6b6560);
+}
+
+.curtain-icon svg {
+  width: 14px;
+  height: 14px;
+}
+
+.curtain-label { flex: 1; }
+
+.curtain-status {
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 1px;
+}
+
+.curtain-status.open   { background: var(--green-soft, rgba(22,163,74,0.12)); color: var(--green, #16a34a); }
+.curtain-status.closed { background: var(--surface-3, #f0ede8); color: var(--ink-3, #6b6560); }
+
+.curtain-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.curtain-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1.5px solid var(--line-2, rgba(0,0,0,0.08));
+  background: var(--paper-2, #f9f8f6);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-2, #3d3630);
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.curtain-btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+.curtain-btn:hover {
+  border-color: var(--accent, #c8973a);
+  color: var(--accent-dim, #a07828);
+  background: var(--accent-soft, rgba(200,151,58,0.08));
+}
+
+.curtain-btn.active {
+  background: var(--accent-soft, rgba(200,151,58,0.12));
+  border-color: var(--accent, #c8973a);
+  color: var(--accent-dim, #a07828);
+  box-shadow: 0 0 0 2px var(--accent-glow, rgba(200,151,58,0.2));
+}
+
+/* ── Selected fixture row ───────────────────────────────────── */
+.fx-row.selected {
+  background: var(--accent-soft, rgba(200,151,58,0.10));
+  border: 1.5px solid var(--accent, #c8973a);
+  border-radius: 8px;
+  padding: 6px 8px;
+}
+
+.fx-row.selected .fx-name {
+  color: var(--accent-dim, #a07828);
+  font-weight: 600;
+}

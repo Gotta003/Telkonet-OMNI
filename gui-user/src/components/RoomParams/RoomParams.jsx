@@ -15,8 +15,7 @@ const Icons = {
 
 const CAP_SLIDER_DEF = {
   climate: { label: 'Climate', icon: <Icons.thermometer />, unit: '°', min: 60, max: 78 },
-  music:   { label: 'Audio',   icon: <Icons.speaker />,     unit: '%', min: 0,  max: 100 },
-  windows: { label: 'Blinds',  icon: <Icons.blinds />,      unit: '%', min: 0,  max: 100 },
+  music:   { label: 'Audio',   icon: <Icons.speaker />,     unit: '%', min: 0,  max: 100 }
 };
 
 function FixtureRow({fixture, value=0, onChange, isSelected, onSelect}) {
@@ -38,12 +37,15 @@ function FixtureRow({fixture, value=0, onChange, isSelected, onSelect}) {
         }
         setFromClientX(e.clientX);
         const move=(ev)=>draggingRef.current && setFromClientX(ev.clientX);
-        const up=()=>{
+        const release=()=>{
             draggingRef.current=false;
             window.removeEventListener('pointermove', move);
-        };
+            window.removeEventListener('pointerup', release);
+            window.removeEventListener('pointercancel', release);
+        }
         window.addEventListener('pointermove', move);
-        window.addEventListener('pointerup', up, {once:true});
+        window.addEventListener('pointerup', release);
+        window.addEventListener('pointercancel', release);
         e.preventDefault();
     };
     const toneInfo=TONE_COLORS[fixture.tone] || TONE_COLORS.warm;
@@ -54,7 +56,7 @@ function FixtureRow({fixture, value=0, onChange, isSelected, onSelect}) {
                 <span className={`fx-glyph ${fixture.icon}`}/>
             </button>
             <span className="fx-name">{fixture.name}</span>
-            <div className='fx-track nosel' ref={trackRef} onPointerDown={onDown}>
+            <div className='fx-track nosel' ref={trackRef} onPointerDown={onDown} style={{touchAction: 'none'}}>
                 <div className='fx-fill' style={{width: `${value}%`, ...(on ? {background: glow} : {})}}/>
                 <div className='fx-thumb' style={{left: `${value}%`, ...(on ? {borderColor: glow} : {})}}/>
             </div>
@@ -64,6 +66,33 @@ function FixtureRow({fixture, value=0, onChange, isSelected, onSelect}) {
             </span>
         </div>
     )
+}
+
+function CurtainControl({value, onChange}) {
+    const isOpen=value>=50;
+    return (
+        <div className='curtain-control'>
+            <div className='curtain_head'>
+                <span className='curtain-icon'>
+                    <Icons.blinds/>
+                </span>
+                <span className='curtain-label'>
+                    Blinds / Curtains
+                </span>
+                <span className={`curtain-status ${isOpen ? 'open' : 'closed'}`}>{isOpen ? 'Open' : 'Closed'}</span>
+            </div>
+            <div className='curtain-buttons'>
+                <button className={`curtain-btn${isOpen ? ' active': ''}`} onClick={()=>onChange(100)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M4 3v18M20 3v18M4 3c2 4 2 8 0 12M20 3c-2 4-2 8 0 12"/></svg>
+                    <span>Open</span>
+                </button>
+                <button className={`curtain-btn${!isOpen ? ' active' : ''}`} onClick={()=>onChange(0)}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M4 3v18M20 3v18M12 3v18M4 3c3 4 3 8 0 12M20 3c-3 4-3 8 0 12"/></svg>
+                    <span>Close</span>
+                </button>
+            </div>
+        </div>
+    );
 }
 
 export default function RoomParams({room, roomState, onChangeParam, onChangeFixture, selectedFixture, onSelectFixture}) {
@@ -81,14 +110,14 @@ export default function RoomParams({room, roomState, onChangeParam, onChangeFixt
     const params=roomState[room.id] || {};
     const fixturesStates=params.fixtures || {};
     const isActive=roomAnyLightOn(roomState, room.id);
-    const safeFixtureValues=Object.values(fixturesStates).filter(v=>typeof v === 'number');
-    const anyLightOn=safeFixtureValues.some(v=>v>5);
+    const fixtureValues=Object.values(fixturesStates).filter(v=>typeof v === 'number');
+    const anyLightOn=fixtureValues.some(v=>v>5);
     return (
         <div className='card params-card'>
             <div className='params-head'>
                 <div className='title'>
                     <span className='name'>{room.name}</span>
-                    <span className='sub'>- {meta.fixtures.length} fixtures</span>
+                    <span className='sub'>- {meta.fixtures.length} fixture{meta.fixtures.length!==1 ? 's' : ''}</span>
                 </div>
                 <div className='pwr'>
                     <span className={`pwr-dot ${isActive ? 'active' : ''}`}/>
@@ -106,35 +135,35 @@ export default function RoomParams({room, roomState, onChangeParam, onChangeFixt
                             <button className='fix-btn-mini' onClick={() => {
                                 meta.fixtures.forEach(f=>onChangeFixture(room.id, f.id, anyLightOn ? 0 : 70));
                             }}>
-                                {Object.values(fixturesStates).some(v=>v>5) ? 'All off' : 'All on'}
+                                {anyLightOn ? 'All off' : 'All on'}
                             </button>
                         </div>
                         {meta.fixtures.map((f)=>(
-                            <FixtureRow key={f.id} fixture={f} value={fixturesStates[f.id] || 0} onChange={(v) => onChangeFixture(room.id, f.id, v)} isSelected={selectedFixture===f.id} onSelect={() => onSelectFixture(f.id)}
+                            <FixtureRow key={f.id} fixture={f} value={fixturesStates[f.id] ?? 0} onChange={(v) => onChangeFixture(room.id, f.id, v)} isSelected={selectedFixture===f.id} onSelect={() => onSelectFixture(f.id)}
                             />
                         ))}
                     </div>
                 )}
                 {/* Climate, Audio, Blinds */}
-                {['climate', 'music', 'windows'].filter(c=>meta.caps.includes(c)).map((c)=>{
+                {['climate', 'music'].filter(c=>meta.caps.includes(c)).map((c)=>{
                     const def=CAP_SLIDER_DEF[c];
                     return (
                         <GlowSlider key={c} value={params[c] ?? def.min} label={def.label} icon={def.icon} unit={def.unit} min={def.min} max={def.max} onChange={(v)=>onChangeParam(room.id, c, v)}/>
                     );
                 })}
-                {/* Missing Capabilities Indicator */}
-                <div className="cap-summary">
-                    {['climate', 'music', 'windows'].filter(c=>!meta.caps.includes(c)).map((c)=>{
-                        const lbl=c==='climate' ? 'No climate zone' : c==='music' ? 'No audio' : 'No blinds';
-                        return (
-                            <span key={c} className='cap-missing'>
-                                <Icons.x/>
-                                {lbl}
-                            </span>
-                        );
-                    })}
-                </div>
+                {/*Curtains*/}
+                {meta.caps.includes('windows') && (
+                    <CurtainControl value={params.windows ?? 50} onChange={v=>onChangeParam(room.id, 'windows', v)}/>
+                )}
+                {['climate', 'music', 'windows'].some(c=>!meta.caps.includes(c)) && (
+                    <div className='cap-summary'>
+                        {['climate', 'music', 'windows'].filter(c=>!meta.caps.includes(c)).map(c=>{
+                            const lbl=c==='climate' ? 'No climate zone' : c==='music' ? 'No audio' : 'No blinds';
+                            return <span key={c} className='cap-missing'><Icons.x/>{lbl}</span>;
+                        })}
+                    </div>
+                )}
             </div>
         </div>
-    )
+    );
 }

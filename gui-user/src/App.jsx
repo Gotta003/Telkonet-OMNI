@@ -7,6 +7,7 @@ import ActivityLog from './components/ActivityLog/ActivityLog';
 import FloorPlan from './components/FloorPlan/FloorPlan';
 import RoomParams from './components/RoomParams/RoomParams';
 import QuickActions from './components/QuickActions/QuickActions';
+import Standby from './components/Standby/Standby';
 import {ROOMS, ROOM_META, findRoom} from './constants/floorplandata';
 import Settings, {DEFAULT_PREFS} from './components/Settings/Settings'
 import Header from './components/Header/Header';
@@ -17,23 +18,11 @@ var POLL_INTERVAL=2000;
 var HISTORY_LEN=30;
 var LOG_MAX=60;
 
-//FUNCTIONS
-const pad2 =(n) => (n<10 ? '0'+n : '' + n);
+const pad2=(n)=>(n<10 ? '0'+n : ''+n);
 
-const nowTime = () => {
+const nowTime=()=>{
     const d=new Date();
     return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-}
-
-//TIME
-const formatClock = (d) => {
-    return `${pad2(d.getHours())}:${pad2(d.getMinutes())}:${pad2(d.getSeconds())}`;
-};
-
-const formatDate = (d) => {
-    var days=['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    var months=['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return days[d.getDay()]+' '+months[d.getMonth()]+' '+d.getDate()+' '+d.getFullYear();
 };
 
 const pushHistory = (arr, val) => {
@@ -55,7 +44,7 @@ const makeInitialRoomState=()=>{
         meta.fixtures.forEach((f)=>{
             fixtures[f.id]=0;
         });
-        state[r.id]={light: 50, climate:60, music:30, windows:50, fixtures};
+        state[r.id]={light: 50, climate:68, music:30, windows:50, fixtures};
     });
     return state;
 };
@@ -98,18 +87,6 @@ function applyPrefs(prefs) {
     root.style.setProperty('--anim-speed', speedMap[prefs.animSpeed] || '250ms');
 }
 
-const IconExpand=()=>(
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" />
-    </svg>
-);
-
-const IconCompress=()=>(
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M8 3v5H3M21 8h-5V3M3 16h5v5M16 21v-5h5" />
-    </svg>
-);
-
 export default function App() {
     const [view, setView]=useState('dashboard');
     const [prefs, setPrefs]=useState(DEFAULT_PREFS);
@@ -121,15 +98,14 @@ export default function App() {
     const [toast, setToast]=useState(null);
     const [log, setLog]=useState([makeEntry("System Boot", "info")]);
     const [online, setOnline]=useState(false);
-
-    useEffect(()=>{applyPrefs(prefs);}, [prefs]);
-    useEffect(()=>{document.documentElement.setAttribute('data-theme', 'light');}, []);
+    const [standby, setStandby]=useState(true);
+    const [volume, setVolume]=useState(30);
 
     const addLog=useCallback((text, type)=>{
         setLog((prev)=>{
             const next=[...prev, makeEntry(text, type)];
             return next.length>LOG_MAX ? next.slice(next.length-LOG_MAX) : next;
-        })
+        });
     }, []);
 
     const showToast=useCallback((message, type) => {
@@ -137,9 +113,75 @@ export default function App() {
         setTimeout(()=>setToast(null), 3000);
     }, [])
 
+    useEffect(()=>{applyPrefs(prefs);}, [prefs]);
+    useEffect(()=>{document.documentElement.setAttribute('data-theme', 'light');}, []);
+    useEffect(()=>{
+        const es=new EventSource('/api/events');
+        es.addEventListener('proximity', (e)=>{
+            if(e.data==='wake') {
+                setStandby(false);
+                addLog('Proximity: screen woke', 'info');
+            }
+            else {
+                setStandby(true);
+                addLog('Proximity: screen sleeping', 'info');
+            }
+        });
+
+        es.addEventListener('button', (e)=>{
+            const btn=e.data;
+            addLog(`Button: ${btn}`, 'info');
+            switch(btn) {
+                case 'home':
+                    setStandby(false);
+                    if (view!=='home') {
+                        setView('home');
+                    }
+                    else {
+                        setView('dashboard');
+                    }
+                    setSelectedRoom(null);
+                    setSelectedFixture(null);
+                    break;
+                case 'settings':
+                    setStandby(false);
+                    setView('settings');
+                    break;
+                case 'volume_up':
+                    setVolume((v)=>Math.min(100, v+10));
+                    setStandby(false);
+                    break;
+                case 'volume_down':
+                    setVolume((v)=>Math.max(0, v-10));
+                    setStandby(false);
+                    break;
+                case 'call_service':
+                    setStandby(false);
+                    setView('dashboard');
+                    showToast('Service requested', 'info');
+                    break;
+                case 'power':
+                    setStandby((prev)=>!prev);
+                    break;
+                default:
+                    break;
+            }
+        });
+        es.onerror=()=>{
+            addLog('Event stream disconnected', 'error');
+        };
+        return ()=>es.close();
+    }, [addLog, showToast]);
+
     const selectRoom=(id) => {
-        setSelectedRoom((prev)=>(prev===id ? null : id));
+        const next=selectRoom===id ? null : id;
+        setSelectedRoom(next);
         setSelectedFixture(null);
+        fetch('/api/lights', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({room: next, fixtures: {}, selectedRoom: next}),
+        }).catch(()=>{});
     };
 
     const selectRoomAndFixture=(roomId, fxId) => {
@@ -166,19 +208,32 @@ export default function App() {
                 [key]: val,
             },
         }));
+        if(key==='windows') {
+            fetch('/api/curtain', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({value: val, room: roomId}),
+            }).catch((e)=>addLog(`Curtain error: ${e.message}`, 'error'));
+        }
     };
 
     const updateFixture=(roomId, fxId, val) => {
-        setRoomState((prev) => ({
-            ...prev,
-            [roomId]: {
-                ...prev[roomId],
-                fixtures: {
-                    ...(prev[roomId]?.fixtures || {}),
-                    [fxId]: val,
-                },
-            },
-        }));
+        setRoomState((prev) =>  {
+            const newFixtures={...(prev[roomId]?.fixtures || {}), [fxId]: val};
+            const newRoom={...prev[roomId], fixtures: newFixtures};
+            const newState={...prev, [roomId]: newRoom};
+
+            fetch('/api/lights', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    room: roomId,
+                    fixtures: newFixtures,
+                    selectedRoom: selectedRoom,
+                }),
+            }).catch((e)=>addLog(`Light sync error: ${e.message}`, 'error'));
+            return newState;
+        });
     };
 
     const handleActivateScene = (scene) => {
@@ -206,6 +261,22 @@ export default function App() {
             return next;
         });
         showToast(`Scene: ${scene.name}`, "success");
+
+        setTimeout(()=>{
+            setRoomState((current)=>{
+                ROOMS.forEach((r)=>{
+                    const fixtures=current[r.id]?.fixtures || {};
+                    if(Object.keys(fixtures).length>0) {
+                        fetch('/api/lights', {
+                            method: 'POST',
+                            headers: {'Content-Type': 'application/json'},
+                            body: JSON.stringify({room: r.id, fixtures, selectedRoom}),
+                        }).catch(()=>{});
+                    }
+                });
+                return current;
+            });
+        }, 50)
     };
 
     const sendCommand=(cmd, label) => {
@@ -224,10 +295,9 @@ export default function App() {
             setRoomState((prev)=>{
                 const next={...prev};
                 ROOMS.forEach((r)=>{
-                    const meta=ROOM_META[r.id] || {fixtures: []};
-                    const fixtures={...(prev[r.id]?.fixtures || {})};
-                    meta.fixtures.forEach((f)=>{fixtures[f.id]=70;});
-                    next[r.id]={...prev[r.id], fixtures};
+                    const fx={...(prev[r.id]?.fixtures || {})};
+                    (ROOM_META[r.id]?.fixtures || []).forEach((f)=>{fx[f.id]=70;});
+                    next[r.id]={...prev[r.id], fixtures: fx};
                 });
                 return next;
             });
@@ -236,10 +306,9 @@ export default function App() {
             setRoomState((prev)=>{
                 const next={...prev};
                 ROOMS.forEach((r)=>{
-                    const meta=ROOM_META[r.id] || {fixtures: []};
-                    const fixtures={...prev[r.id]?.fixtures || []};
-                    meta.fixtures.forEach((f)=>{fixtures[f.id]=0;});
-                    next[r.id]={...prev[r.id], fixtures};
+                    const fx={...(prev[r.id]?.fixtures || {})};
+                    (ROOM_META[r.id]?.fixtures || []).forEach((f)=>{fx[f.id]=0;});
+                    next[r.id]={...prev[r.id], fixtures: fx};
                 });
                 return next;
             });
@@ -248,9 +317,8 @@ export default function App() {
             setRoomState((prev)=>{
                 const next={...prev};
                 ROOMS.forEach((r)=>{
-                    const meta=ROOM_META[r.id] || {fixtures: []};
-                    const fixtures={...(prev[r.id]?.fixtures || {})};
-                    meta.fixtures.forEach((f)=>{fixtures[f.id]=80;});
+                    const fx={...(prev[r.id]?.fixtures || {})};
+                    (ROOM_META[r.id]?.fixtures || []).forEach((f)=>{fx[f.id]=80;});
                     next[r.id]={...prev[r.id], fixtures, climate: 70, music: 50, windows: 60};
                 });
                 return next;
@@ -306,7 +374,11 @@ export default function App() {
 
     return (
         <div className={`app view-${view}`}>
-            <Header online={online} view={view} onHome={()=>{setView('home'); setSelectedRoom(null); setSelectedFixture(null);}} onDashboard={()=>setView('dashboard')} onSettings={()=>setView('settings')} prefs={prefs}/>
+            {standby && (<Standby onWake={() => {
+                setStandby(false);
+                setView('dashboard');
+            }}/>)}
+            <Header online={online} view={view} onHome={()=>{setStandby(false); setView('home'); setSelectedRoom(null); setSelectedFixture(null);}} onDashboard={()=>{setStandby(false); setView('dashboard');}} onSettings={()=>{setStandby(false); setView('settings');}} prefs={prefs} volume={volume} onVolumeChange={setVolume}/>
             {/*SETTINGS VIEW*/}
             {view==='settings' && (
                 <Settings prefs={prefs} onChange={setPrefs}/>

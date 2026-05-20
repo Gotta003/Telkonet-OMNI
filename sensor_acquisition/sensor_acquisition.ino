@@ -22,19 +22,15 @@
 //Buzzer
 #define BUZZER_PIN 3
 
-const int serPin=11;
-const int rclkPin=8;
-const int srclkPin=7;
-//Init Variables
-const int sensorPin=LIGHTPIN;
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_GRB+NEO_KHZ800);
-int sensorValue=0;
-bool isGreen[LED_COUNT];
-unsigned long lastSensorRead=0;
-//Motor
 const int stepsPerRevolution=2048;
 Stepper myStepper(stepsPerRevolution, IN1_PIN, IN3_PIN, IN2_PIN, IN4_PIN);
+
+bool isGreen[LED_COUNT];
+unsigned long lastSensorRead=0;
+unsigned long lastButtonRead=0;
+bool lastButtonState=false;
 
 void playFeedback() {
   tone(BUZZER_PIN, 4000, 50);
@@ -52,9 +48,6 @@ void setup() {
   //Buzzer
   pinMode(BUZZER_PIN, OUTPUT);
   //Shift registers 8 LED RGB
-  pinMode(serPin, OUTPUT);
-  pinMode(rclkPin, OUTPUT);
-  pinMode(srclkPin, OUTPUT);
   strip.begin();
   strip.setBrightness(50);
   for(int i=0; i<LED_COUNT; i++) {
@@ -62,7 +55,7 @@ void setup() {
     isGreen[i]=false;
   }
   strip.show();
-  Serial.print("Setup Correct!");
+  Serial.println("STATUS:READY");
 }
 
 void loop() {
@@ -71,45 +64,25 @@ void loop() {
     lastSensorRead=millis();
     float humidity=dht.readHumidity();
     float tempC=dht.readTemperature();
-    if (isnan(humidity) || isnan(tempC)) {
-      Serial.println("Failed to read from DHT sensor!");
-      return;
-    }
-    sensorValue=analogRead(sensorPin);
-    long duration;
-    int distance;
+    int lightVal=analogRead(LIGHTPIN);
     digitalWrite(TRIG_PIN, LOW);
     delayMicroseconds(2);
     digitalWrite(TRIG_PIN, HIGH);
     delayMicroseconds(10);
     digitalWrite(TRIG_PIN, LOW);
-    duration=pulseIn(ECHO_PIN, HIGH);
-    distance=duration*0.034/2;
+    long duration=pulseIn(ECHO_PIN, HIGH);
+    int distance=duration*0.034/2;
     Serial.print("DATA");
-    Serial.print("|temperature:");
-    if (!isnan(tempC)) {
-      Serial.print(tempC, 1);
-    }
-    else {
-      Serial.print("--");
-    }
-    Serial.print("|humidity:"); 
-    if (!isnan(humidity)) {
-      Serial.print(humidity, 1);
-    }
-    else {
-      Serial.print("--");
-    }
-    Serial.print("light:"); 
-    Serial.print(sensorValue);
-    Serial.print("|distance:");
-    Serial.print(distance);
+    Serial.print("|temperature:"); Serial.print(isnan(tempC)?"--":String(tempC, 1));
+    Serial.print("|humidity:"); Serial.print(isnan(humidity)?"--":String(humidity, 1));
+    Serial.print("|light:"); Serial.print(lightVal);
+    Serial.print("|distance:"); Serial.println(distance);
   }
   //BUTTONS
   if(millis()-lastButtonRead>=50) {
     lastButtonRead=millis();
     int btnVal=analogRead(BUTTON_PIN);
-    bool pressed=(btnVal>100);
+    bool pressed=(btnVal>50);
     if(pressed && !lastButtonState) {
       //Rising Edge
       playFeedback();
@@ -124,12 +97,12 @@ void loop() {
     cmd.trim();
     playFeedback();
     if(cmd=="OPEN") {
-      Serial.println("ACK|OPEN|Opening curtains");
       myStepper.step(1024);
+      Serial.println("ACK|OPEN|Opening curtains");
     }
     else if (cmd=="CLOSE") {
-      Serial.println("ACK|CLOSE|Closing curtains");
       myStepper.step(-1024);
+      Serial.println("ACK|CLOSE|Closing curtains");
     }
     else if(cmd=="H"){//ALL ON
       for(int i=0; i<LED_COUNT; i++) {
@@ -150,24 +123,18 @@ void loop() {
       Serial.println("ACK|N|Night mode");
     }
     else if (cmd.startsWith("D")) {//TOGLLE LED 0-7
-      int ledIndex=cmd.substring(1).toInt();
-      if(ledIndex>=0 && ledIndex<LED_COUNT) {
-        if(!isGreen[ledIndex]) {
-          strip.setPixelColor(ledIndex, strip.Color(0, 255, 0));
-          isGreen[ledIndex]=true;
-        }
-        else {
-          strip.setPixelColor(ledIndex, strip.Color(50, 0, 0));
-          isGreen[ledIndex]=false;
-        }
+      int idx=cmd.substring(1).toInt();
+      if(idx>=0 && idx<LED_COUNT) {
+        isGreen[idx]=!isGreen[idx];
+        strip.setPixelColor(idx, isGreen[idx] ? strip.Color(0, 255, 0) : strip.Color(50, 0, 0));
         Serial.print("ACK|D");
-        Serial.print(ledIndex);
+        Serial.print(idx);
         Serial.print("|");
-        Serial.println(isGreen[ledIndex] ? "on" : "off");
+        Serial.println(isGreen[idx] ? "on" : "off");
       }
     }
     else {
-      Serial.print("ERR|unknown command: ");
+      Serial.print("ERR|unknown: ");
       Serial.println(cmd);
     }
     strip.show();

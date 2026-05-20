@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import "./Header.css"
 
 // Modern Utilities
-const pad2 = (n) => n < 10 ? `0${n}` : `${n}`;
+const pad2 = (n) => n<10 ? `0${n}` : `${n}`;
+
 const formatClock=(d, prefs) => {
     if(!prefs) {
         return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
@@ -47,7 +48,7 @@ const IcSettings = () => (
   </svg>
 );
 
-export default function Header({online, view, onHome, onDashboard, onSettings, prefs}) {
+export default function Header({online, view, onHome, onDashboard, onSettings, prefs, volume=30, onVolumeChange}) {
     const [now, setNow]=useState(new Date());
 
     useEffect(()=>{
@@ -76,6 +77,13 @@ export default function Header({online, view, onHome, onDashboard, onSettings, p
                 <div className='clock-wrap'>
                     <span className='clock-date'>{formatDate(now)}</span>
                     <span className='clock-time'>{formatClock(now, prefs)}</span>
+                </div>
+                <div className='volume-pill' title="Volume">
+                    <svg width="12" height="12" viewBox='0 0 24 24' fill='none' stroke='currentColor' strokeWidth="1.8" strokeLinecap='round' strokeLinejoin='round'>
+                        {volume > 0  && <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>}
+                        {volume > 50 && <path d="M19.07 4.93a10 10 0 0 1 0 14.14"/>}
+                    </svg>
+                    <span>{volume}%</span>
                 </div>
                 <div className={`status-pill ${online ? 'online' : 'offline'}`}>
                     <span className='status-dot'/>

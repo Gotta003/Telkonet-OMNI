@@ -623,7 +623,7 @@ html, body, #root {
 }
 .fp-room.has-light .fp-room-fill { fill: var(--room-fill-lit) !important; }
 .fp-room.level-hi  .fp-room-fill { fill: var(--room-fill-hi)  !important; }
-.fp-room.selected  .fp-room-fill { fill: rgba(200,151,58,0.13) !important; stroke: var(--accent) !important; stroke-width: 2px !important; }
+.fp-room.selected  .fp-room-fill { fill: var(--accent-soft) !important; stroke: var(--accent) !important; stroke-width: 2px !important; }
 .fp-room-label { fill: #7a7060 !important; }
 .fp-room.selected .fp-room-label { fill: var(--accent-dim) !important; }
 .fp-walls { stroke: #6a5f50 !important; stroke-width: 1.5px !important; }
@@ -636,4 +636,35 @@ html, body, #root {
   .logo-title { display: none; }
   .nav-btn span { display: none; }
   .nav-btn { padding: 7px 9px; }
+}
+
+/* ── Volume pill ───────────────────────────────────────────── */
+.volume-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-dim);
+  transition: color 0.2s, border-color 0.2s;
+}
+
+/* Flash accent briefly when volume changes */
+.volume-pill.changed {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* ── Standby fade transition ───────────────────────────────── */
+.standby {
+  animation: standbyFadeIn 0.6s ease;
+}
+
+@keyframes standbyFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }

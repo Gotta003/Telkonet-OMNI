@@ -1,0 +1,141 @@
+.standby {
+  position: fixed;
+  inset: 0;
+  background: #07080b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  overflow: hidden;
+  animation: standbyFadeIn 0.8s ease;
+}
+
+@keyframes standbyFadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Canvas fills the whole standby area behind the text */
+.standby-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100% !important;
+  height: 100% !important;
+  pointer-events: none;
+}
+
+/* Text content floats above the canvas */
+.standby-content {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+}
+
+/* Logo */
+.standby-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.standby-logo-mark {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 6px;
+  color: #c8973a;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  opacity: 0.85;
+}
+
+.standby-logo-name {
+  font-family: 'Playfair Display', Georgia, serif;
+  font-size: 56px;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 10px;
+  line-height: 1;
+  /* subtle glow matching the particles */
+  text-shadow: 0 0 40px rgba(200, 151, 58, 0.35),
+               0 0 80px rgba(200, 151, 58, 0.15);
+}
+
+/* Clock */
+.standby-clock {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 80px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 4px;
+  line-height: 1;
+  text-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+}
+
+.standby-date {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 13px;
+  letter-spacing: 3px;
+  color: rgba(255, 255, 255, 0.38);
+  text-transform: uppercase;
+}
+
+/* Hint */
+.standby-hint {
+  margin-top: 36px;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: rgba(200, 151, 58, 0.5);
+  text-transform: uppercase;
+  animation: hintPulse 3s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 1;   }
+}
+
+/* Both particle layers fill the full background */
+.standby-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 0;
+    pointer-events: none;
+}
+
+.standby-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;          /* luna behind soft particles */
+    pointer-events: none;
+    opacity: 65%;
+}
+
+.standby-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100% !important;
+    height: 100% !important;
+    z-index: 1;          /* soft particles on top of luna */
+    pointer-events: none;
+    opacity: 85%;
+}
+
+/* Content floats above both particle layers */
+.standby-content {
+    position: relative;
+    z-index: 2;
+}
+
+.standby-ring {
+    position: absolute;
+    z-index: 1;
+    pointer-events: none;
+}
