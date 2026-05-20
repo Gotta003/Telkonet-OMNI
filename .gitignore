@@ -13,6 +13,8 @@ venv/
 # Node / React
 gui-user/node_modules/
 gui-user/.vite/
+config.local.*
+__pycache__/
 
 # Jupyter
 notebooks/.ipynb_checkpoints/
@@ -24,4 +26,3 @@ Thumbs.db
 
 # Secrets
 *.env
-config.local.*
