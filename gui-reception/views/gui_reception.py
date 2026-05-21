@@ -6,12 +6,14 @@ import queue
 # ================= ORIGINAL NETWORK INTEGRATION =================
 try:
     import network_client as nc
-    from constants import BRIDGE_URL, ROOM_ID_MAP, SUITES, ROOMS, UI_REFRESH_MS
+    from constants import BRIDGE_URL, ROOM_ID_MAP, ROOMS, UI_REFRESH_MS
+    # Forziamo SUITES ad avere solo "SUITE 1" a prescindere dal modulo constants
+    SUITES = ["SUITE 1"]
     NETWORK_AVAILABLE = True
 except ImportError:
     # Safe fallback configuration if local modules are missing
     BRIDGE_URL = "http://127.0.0.1:5000"
-    SUITES = ["SUITE 1", "SUITE 2", "SUITE 3", "SUITE 4", "SUITE 5"]
+    SUITES = ["SUITE 1"]
     ROOMS = ["ENTRY", "HALL", "BATH", "BEDROOM", "EN-SUITE", "KITCHENETTE", "LIVING"]
     ROOM_ID_MAP = {
         "ENTRY": "entry", "HALL": "hall", "BATH": "bath", 
