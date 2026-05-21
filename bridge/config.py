@@ -25,11 +25,11 @@ PROXIMITY_NOISE_CM=2
 #Button Mapping
 BUTTON_MAP=[
     (800, 1023, "home"),
-    (600, 799, "settings"),
-    (430, 599, "volume_up"),
-    (270, 429, "volume_down"),
-    (150, 269, "power"),
-    (50, 149, "call_service"),
+    (400, 799, "settings"),
+    (150, 399, "volume_up"),
+    (1824, 2047, "volume_down"),
+    (1424, 1823, "power"),
+    (1174, 1423, "call_service"),
 ]
 
 #Rooms

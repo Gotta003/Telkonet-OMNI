@@ -7,7 +7,8 @@
 //Light Pin
 #define LIGHTPIN A0
 //Buttons
-#define BUTTON_PIN A1
+#define BUTTON_PIN_1 A1
+#define BUTTON_PIN_2 A2
 //8 RGB LED
 #define LED_PIN 6
 #define LED_COUNT 8
@@ -30,7 +31,9 @@ Stepper myStepper(stepsPerRevolution, IN1_PIN, IN3_PIN, IN2_PIN, IN4_PIN);
 bool isGreen[LED_COUNT];
 unsigned long lastSensorRead=0;
 unsigned long lastButtonRead=0;
-bool lastButtonState=false;
+bool lastPressed1=false;
+bool lastPressed2=false;
+const int THRESHOLD=150;
 
 void playFeedback() {
   tone(BUZZER_PIN, 4000, 50);
@@ -81,15 +84,23 @@ void loop() {
   //BUTTONS
   if(millis()-lastButtonRead>=50) {
     lastButtonRead=millis();
-    int btnVal=analogRead(BUTTON_PIN);
-    bool pressed=(btnVal>50);
-    if(pressed && !lastButtonState) {
+    int val1=analogRead(BUTTON_PIN_1);
+    int val2=analogRead(BUTTON_PIN_2);
+    bool pressed1=(val1>THRESHOLD);
+    bool pressed2=(val2>THRESHOLD);
+    if(pressed1 && !lastPressed1) {
       //Rising Edge
       playFeedback();
       Serial.print("EVENT|button:");
-      Serial.println(btnVal);
+      Serial.println(val1);
     }
-    lastButtonState=pressed;
+    if(pressed2 && !lastPressed2) {
+      playFeedback();
+      Serial.print("EVENT|button:");
+      Serial.println(val2+1024);
+    }
+    lastPressed1=pressed1;
+    lastPressed2=pressed2;
   }
   //Serial command Handler
   if(Serial.available()>0) {
@@ -107,26 +118,57 @@ void loop() {
     else if(cmd=="H"){//ALL ON
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(0, 255, 0));
+        isGreen[i]=true;
       }
       Serial.println("ACK|H|All lights on");
     }
     else if(cmd=="L") {//ALL OFF
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(50, 0, 0));
+        isGreen[i]=false;
       }
       Serial.println("ACK|L|All lights off");
     }
     else if(cmd=="N") {//NIGHT MODE
       for(int i=0; i<LED_COUNT; i++) {
         strip.setPixelColor(i, strip.Color(0, 0, 50));
+        isGreen[i]=false;
       }
       Serial.println("ACK|N|Night mode");
     }
+    else if (cmd.startsWith("P")) {
+      int colon=cmd.indexOf(':');
+      if(colon>1) {
+        int idx=cmd.substring(1, colon).toInt();
+        int brightness=cmd.substring(colon+1).toInt();
+        brightness=constrain(brightness, 0, 255);
+        if(idx>=0 && idx<LED_COUNT) {
+          isGreen[idx]=(brightness>12);
+          if(brightness>0) {
+            strip.setPixelColor(idx, strip.Color(0, brightness, 0));
+          }
+          else {
+            strip.setPixelColor(idx, strip.Color(50, 0, 0));
+          }
+          Serial.print("ACK|P");
+          Serial.print(idx);
+          Serial.print("|");
+          Serial.println(brightness);
+        }
+      }
+    }
     else if (cmd.startsWith("D")) {//TOGLLE LED 0-7
-      int idx=cmd.substring(1).toInt();
+      int colon=cmd.indexOf(':');
+      int idx=(colon>1) ? cmd.substring(1,colon).toInt() : cmd.substring(1).toInt();
       if(idx>=0 && idx<LED_COUNT) {
-        isGreen[idx]=!isGreen[idx];
-        strip.setPixelColor(idx, isGreen[idx] ? strip.Color(0, 255, 0) : strip.Color(50, 0, 0));
+        if(colon>1) {
+          isGreen[idx]=false;
+          strip.setPixelColor(idx, strip.Color(50, 0, 0));
+        }
+        else {
+          isGreen[idx]=!isGreen[idx];
+          strip.setPixelColor(idx, isGreen[idx] ? strip.Color(0, 255, 0) : strip.Color(50, 0, 0));
+        }
         Serial.print("ACK|D");
         Serial.print(idx);
         Serial.print("|");

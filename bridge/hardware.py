@@ -15,7 +15,8 @@ def connect_arduino():
             try:
                 # Try connection
                 conn = serial.Serial(port=port, baudrate=9600, timeout=1)
-                time.sleep(2) 
+                time.sleep(CONNECT_WAIT)
+                _arduino=conn 
                 log.info(f"Connected to {user}'s port: {port} ({user})")
                 return conn
             except (serial.SerialException, OSError):
@@ -192,21 +193,15 @@ def _handle_line(raw: str):
         dist_raw=_sensor_data.get("distance", "--")
         try:
             dist=int(dist_raw)
-            if PROXIMITY_NOISE_CM<dist<PROXIMITY_WAKE_CM:
-                if not _screen_active:
-                    _screen_active=True
-                    _broadcast("proximity", "wake")
-                    log.info(f"Wake (distance={dist}cm)")
-                else:
-                    if _screen_active:
-                        _screen_active=False
-                        _broadcast("proximity", "sleep")
-                        log.info(f"Sleep (Distance={dist}cm)")
-                    else:
-                        if _screen_active:
-                            _screen_active=False
-                            _broadcast("proximity", "sleep")
-                            log.info(f"Sleep (distance={dist}cm)")
+            in_range=PROXIMITY_NOISE_CM<dist<PROXIMITY_WAKE_CM
+            if in_range and not _screen_active:
+                _screen_active=True
+                _broadcast("proximity", "wake")
+                log.info(f"Wake (distance={dist}cm)")
+            elif not in_range and _screen_active:
+                _screen_active=False
+                _broadcast("proximity", "sleep")
+                log.info(f"Sleep (Distance={dist}cm)")
         except ValueError:
             pass
     elif raw.startswith("EVENT|button:"):

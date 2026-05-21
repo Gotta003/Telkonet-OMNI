@@ -174,7 +174,7 @@ export default function App() {
     }, [addLog, showToast]);
 
     const selectRoom=(id) => {
-        const next=selectRoom===id ? null : id;
+        const next=selectedRoom===id ? null : id;
         setSelectedRoom(next);
         setSelectedFixture(null);
         fetch('/api/lights', {

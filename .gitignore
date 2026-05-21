@@ -9,6 +9,7 @@ __pycache__/
 venv/
 .venv/
 *.egg-info/
+logs/
 
 # Node / React
 gui-user/node_modules/

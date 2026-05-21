@@ -110,7 +110,7 @@ def curtain_command():
             hardware.set_curtain(target_open)
             broadcast("curtain", cmd.lower())
             log.info(f"Curtain -> {cmd}")
-            return jsonify(status="ok", action=cmd, open=target_open), 503
+            return jsonify(status="ok", action=cmd, open=target_open), 200
         return jsonify(status="error", msg="Serial Unavailable"), 503
     return jsonify(status="ok", action="no-change", open=hardware.get_curtain())
    
