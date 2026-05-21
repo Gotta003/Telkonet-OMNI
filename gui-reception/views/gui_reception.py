@@ -31,13 +31,38 @@ class NexusReceptionMonitor:
         self.root.minsize(1400, 850)
         
         self.event_queue = queue.Queue()
-        self.current_theme = "light"
         self.standby_mode = False
+        
+        # --- GESTIONE TIMER STANDBY PER INATTIVITÀ ---
+        self.standby_timeout_ms = 30000  # 30 secondi di inattività
+        self.standby_timer_id = None      
         
         self.selected_suite = tk.StringVar(value="SUITE 1")
         self.active_room = "ENTRY"
 
-        # ================= STYLE TOKENS PARALLEL TO GUI-USER =================
+        # ================= APP GRAPHICAL SETTINGS STATE =================
+        self.settings = {
+            "theme": "light",              
+            "accent": "#c8973a",           
+            "font_size": 16,               
+            "font_style": "Modern",        
+            "fixture_size": "Medium",      
+            "room_fill": "Neutral",        
+            "clock_format": "24h",         
+            "show_seconds": True,          
+            "animation_speed": "Fast"      
+        }
+        self.view_mode = "details"         
+
+        self.accent_palette = [
+            {"hex": "#c8973a", "name": "Gold"},
+            {"hex": "#b45309", "name": "Rust"},
+            {"hex": "#15803d", "name": "Green"},
+            {"hex": "#1d4ed8", "name": "Blue"},
+            {"hex": "#6d28d9", "name": "Purple"},
+            {"hex": "#374151", "name": "Dark Grey"}
+        ]
+
         self.themes = {
             "light": {
                 "bg": "#f4f2ee",
@@ -51,11 +76,7 @@ class NexusReceptionMonitor:
                 "text": "#0d1b2e",
                 "text_dim": "#7a7060",
                 "green": "#16a34a",
-                "red": "#dc2626",
-                "font_display": ("Playfair Display", 20, "bold"),
-                "font_subtitle": ("Inter", 12, "bold"),
-                "font_body": ("Inter", 11),
-                "font_mono": ("JetBrains Mono", 10, "bold") # Ridotto leggermente per garantire spazio nei bottoni
+                "red": "#dc2626"
             },
             "dark": {
                 "bg": "#0d0e12",
@@ -69,11 +90,7 @@ class NexusReceptionMonitor:
                 "text": "#e8eaf0",
                 "text_dim": "#6b7280",
                 "green": "#22c55e",
-                "red": "#ef4444",
-                "font_display": ("Rajdhani", 22, "bold"),
-                "font_subtitle": ("Rajdhani", 14, "bold"),
-                "font_body": ("Inter", 11),
-                "font_mono": ("Share Tech Mono", 11, "bold")
+                "red": "#ef4444"
             }
         }
 
@@ -96,6 +113,10 @@ class NexusReceptionMonitor:
         self.update_clock()
         self.process_network_queue()
 
+        # Attiva i binding globali e avvia il primo timer
+        self.setup_activity_bindings()
+        self.reset_standby_timer()
+
         if NETWORK_AVAILABLE:
             nc.on("connect", lambda _: self.event_queue.put(("LOG", "SYSTEM", "Connected to Omniroom Bridge", "green")))
             nc.on("disconnect", lambda _: self.event_queue.put(("LOG", "SYSTEM", "Bridge communication lost", "red")))
@@ -107,8 +128,73 @@ class NexusReceptionMonitor:
             nc.start()
             self.poll_network_loop()
 
+    # ================= LOGICA DI ATTIVITÀ / INATTIVITÀ (CORRETTA) =================
+    def setup_activity_bindings(self):
+        """Assegna gli eventi di input alla finestra principale."""
+        self.root.bind_all("<Any-KeyPress>", self.on_user_activity)
+        self.root.bind_all("<Motion>", self.on_user_activity)
+        self.root.bind_all("<Button-1>", self.on_user_activity)
+
+    def on_user_activity(self, event=None):
+        """Eseguito ad ogni interazione dell'utente sulla console."""
+        if self.standby_mode:
+            # SVEGLIA LA CONSOLE: Cambiamo lo stato PRIMA di ricostruire la GUI
+            self.standby_mode = False
+            self.apply_theme_tokens()
+            self.create_widgets()
+            self.add_log("SYSTEM", "Console awakened by local user activity", "green")
+        
+        # Resetta sempre il countdown per lo standby
+        self.reset_standby_timer()
+
+    def reset_standby_timer(self):
+        """Azzera il vecchio timer e ne crea uno nuovo da 30 secondi."""
+        if self.standby_timer_id is not None:
+            self.root.after_cancel(self.standby_timer_id)
+            self.standby_timer_id = None
+        
+        # Crea il timer solo se lo schermo è attivo
+        if not self.standby_mode:
+            self.standby_timer_id = self.root.after(self.standby_timeout_ms, self.trigger_standby)
+
+    def trigger_standby(self):
+        """Entra in modalità standby dopo 30s di inattività totale."""
+        if not self.standby_mode:
+            self.standby_mode = True
+            if self.standby_timer_id is not None:
+                self.root.after_cancel(self.standby_timer_id)
+                self.standby_timer_id = None
+                
+            self.apply_theme_tokens()
+            self.create_widgets()
+
+    # ================= INTERFACCIA GRAFICA E LOGICA BASE =================
     def apply_theme_tokens(self):
-        self.tokens = self.themes[self.current_theme]
+        selected_theme = str(self.settings["theme"]).lower()
+        if selected_theme == "auto":
+            hour = datetime.now().hour
+            theme_key = "dark" if (hour < 7 or hour > 19) else "light"
+        else:
+            theme_key = selected_theme
+
+        self.tokens = self.themes[theme_key].copy()
+        self.tokens["accent"] = self.settings["accent"]
+        
+        base_sz = self.settings["font_size"]
+        style_type = self.settings["font_style"]
+        
+        if style_type == "Modern":
+            font_family = "Inter"
+        elif style_type == "Classic":
+            font_family = "Playfair Display"
+        else:
+            font_family = "JetBrains Mono"
+
+        self.tokens["font_display"] = (font_family, int(base_sz * 1.3), "bold")
+        self.tokens["font_subtitle"] = (font_family, int(base_sz * 0.85), "bold")
+        self.tokens["font_body"] = (font_family, int(base_sz * 0.75))
+        self.tokens["font_mono"] = ("JetBrains Mono" if style_type == "Mono" else "Courier", int(base_sz * 0.7), "bold")
+        
         self.root.configure(bg=self.tokens["bg"])
         
         style = ttk.Style()
@@ -117,7 +203,7 @@ class NexusReceptionMonitor:
                         fieldbackground=self.tokens["surface"],
                         background=self.tokens["surface"],
                         foreground=self.tokens["accent"],
-                        padding=4, # Ridotto per evitare il taglio verticale della scritta interna
+                        padding=4,
                         relief="flat",
                         font=self.tokens["font_body"])
 
@@ -136,23 +222,23 @@ class NexusReceptionMonitor:
         tk.Label(header, text="TELKONET OMNIROOM", font=self.tokens["font_display"], bg=self.tokens["surface"], fg=self.tokens["accent"]).pack(side="left", padx=(20, 15), pady=12)
         tk.Label(header, text="•  Reception Data Monitor Console", font=self.tokens["font_body"], bg=self.tokens["surface"], fg=self.tokens["text_dim"]).pack(side="left", pady=18)
 
-        theme_btn = tk.Button(header, text="SWITCH THEME", font=self.tokens["font_mono"], bg=self.tokens["surface_3"], fg=self.tokens["text"], relief="flat", bd=0, padx=15, pady=6, cursor="hand2", command=self.toggle_theme)
-        theme_btn.pack(side="right", padx=20, pady=12)
+        btn_text = "BACK TO MONITOR" if self.view_mode == "settings" else "⚙ SYSTEM SETTINGS"
+        view_btn = tk.Button(header, text=btn_text, font=self.tokens["font_mono"], bg=self.tokens["surface_3"], fg=self.tokens["text"], relief="flat", bd=0, padx=15, pady=6, cursor="hand2", command=self.toggle_view_mode)
+        view_btn.pack(side="right", padx=20, pady=12)
 
         self.clock_lbl = tk.Label(header, font=self.tokens["font_mono"], bg=self.tokens["surface"], fg=self.tokens["text"])
         self.clock_lbl.pack(side="right", padx=10, pady=15)
 
-        # ---- MAIN WRAPPER (Convertito a Grid Proporzionale) ----
+        # ---- MAIN WRAPPER ----
         main_container = tk.Frame(self.root, bg=self.tokens["bg"])
         main_container.pack(fill="both", expand=True, padx=20, pady=10)
         
-        # Definiamo le proporzioni: 25% Sinistra, 50% Centro, 25% Destra
         main_container.rowconfigure(0, weight=1)
-        main_container.columnconfigure(0, weight=25, minsize=380) # Pannello Stanze
-        main_container.columnconfigure(1, weight=50, minsize=640) # Pannello Centrale
-        main_container.columnconfigure(2, weight=25, minsize=380) # Pannello Log
+        main_container.columnconfigure(0, weight=25, minsize=380) 
+        main_container.columnconfigure(1, weight=50, minsize=640) 
+        main_container.columnconfigure(2, weight=25, minsize=380) 
 
-        # ---- PANEL LEFT: BLUEPRINT & SUITE SELECTION ----
+        # ---- PANEL LEFT ----
         left_panel = tk.Frame(main_container, bg=self.tokens["surface"], highlightbackground=self.tokens["border"], highlightthickness=1)
         left_panel.grid(row=0, column=0, sticky="nsew", padx=(0, 15))
 
@@ -168,22 +254,30 @@ class NexusReceptionMonitor:
         self.blueprint_frame.pack(fill="both", expand=True, padx=20, pady=(5, 20))
         self.render_blueprint_rooms()
 
-        # ---- PANEL CENTER: ROOM DETAIL PARAMS ----
+        # ---- PANEL CENTER ----
         self.center_panel = tk.Frame(main_container, bg=self.tokens["surface"], highlightbackground=self.tokens["border"], highlightthickness=1)
         self.center_panel.grid(row=0, column=1, sticky="nsew", padx=(0, 15))
-        self.render_room_details_panel()
+        
+        if self.view_mode == "settings":
+            self.render_settings_panel()
+        else:
+            self.render_room_details_panel()
 
-        # ---- PANEL RIGHT: REALTIME NOTIFICATION & ACTIVITY LOG ----
+        # ---- PANEL RIGHT ----
         right_panel = tk.Frame(main_container, bg=self.tokens["surface"], highlightbackground=self.tokens["border"], highlightthickness=1)
         right_panel.grid(row=0, column=2, sticky="nsew")
 
         tk.Label(right_panel, text="GUEST ACTIVITY LOG", font=self.tokens["font_subtitle"], bg=self.tokens["surface"], fg=self.tokens["text"]).pack(anchor="w", padx=20, pady=(20, 10))
 
-        # width=10 costringe il widget a non forzare la larghezza della colonna grid oltre il consentito
         self.log_widget = tk.Text(right_panel, bg=self.tokens["surface_2"], fg=self.tokens["text"], font=self.tokens["font_mono"], state="disabled", borderwidth=0, padx=12, pady=12, wrap="word", width=10)
         self.log_widget.pack(fill="both", expand=True, padx=20, pady=(0, 20))
 
-        self.update_display_values()
+        if self.view_mode == "details":
+            self.update_display_values()
+
+    def toggle_view_mode(self):
+        self.view_mode = "details" if self.view_mode == "settings" else "settings"
+        self.create_widgets()
 
     def render_blueprint_rooms(self):
         for w in self.blueprint_frame.winfo_children():
@@ -201,11 +295,131 @@ class NexusReceptionMonitor:
             btn.config(command=lambda r=room: self.select_room(r))
             btn.pack(fill="x", padx=10, pady=4, ipady=6)
 
+    def render_settings_panel(self):
+        for w in self.center_panel.winfo_children():
+            w.destroy()
+
+        title_frame = tk.Frame(self.center_panel, bg=self.tokens["surface"])
+        title_frame.pack(fill="x", padx=30, pady=(25, 15))
+        tk.Label(title_frame, text="CONSOLE SETTINGS", font=self.tokens["font_display"], bg=self.tokens["surface"], fg=self.tokens["text"]).pack(side="left")
+
+        scroll_box = tk.Frame(self.center_panel, bg=self.tokens["surface"])
+        scroll_box.pack(fill="both", expand=True, padx=30, pady=5)
+
+        self.build_section_header(scroll_box, "APPEARANCE")
+        self.build_segmented_row(scroll_box, "Theme", "Choose between light and dark mode", 
+                                 ["Light", "Dark", "Auto"], str(self.settings["theme"]).capitalize(), 
+                                 lambda v: self.update_setting("theme", str(v).lower()))
+        self.build_accent_picker_row(scroll_box)
+
+        self.build_section_header(scroll_box, "TYPOGRAPHY")
+        self.build_slider_row(scroll_box, "Font size", "Base size for all text - larger helps readability", 
+                              12, 24, self.settings["font_size"], 
+                              lambda v: self.update_setting("font_size", int(float(v))))
+        self.build_segmented_row(scroll_box, "Font Style", "Interface typeface", 
+                                 ["Modern", "Classic", "Mono"], self.settings["font_style"], 
+                                 lambda v: self.update_setting("font_style", v))
+
+        self.build_section_header(scroll_box, "FLOOR PLAN")
+        self.build_segmented_row(scroll_box, "Fixture icon size", "Size of light fixture markers on the plan", 
+                                 ["Small", "Medium", "Large"], self.settings["fixture_size"], 
+                                 lambda v: self.update_setting("fixture_size", v))
+        self.build_segmented_row(scroll_box, "Room Fill Style", "How lit rooms are shown on the plan", 
+                                 ["Warm", "Neutral", "Minimal"], self.settings["room_fill"], 
+                                 lambda v: self.update_setting("room_fill", v))
+
+        self.build_section_header(scroll_box, "CLOCK & STATUS")
+        self.build_segmented_row(scroll_box, "Clock format", "How the time is shown in header", 
+                                 ["24h", "12h"], self.settings["clock_format"], 
+                                 lambda v: self.update_setting("clock_format", v))
+        self.build_segmented_row(scroll_box, "Show seconds", "Display seconds in the clock", 
+                                 ["On", "Off"], "On" if self.settings["show_seconds"] else "Off", 
+                                 lambda v: self.update_setting("show_seconds", v == "On"))
+
+        self.build_section_header(scroll_box, "INTERACTION")
+        self.build_segmented_row(scroll_box, "Panel animation speed", "How fast the right panel slides in and out", 
+                                 ["None", "Fast", "Slow"], self.settings["animation_speed"], 
+                                 lambda v: self.update_setting("animation_speed", v))
+
+    def build_section_header(self, parent, text):
+        f = tk.Frame(parent, bg=self.tokens["surface"])
+        f.pack(fill="x", pady=(20, 5))
+        tk.Label(f, text=text, font=self.tokens["font_mono"], fg=self.tokens["text_dim"], bg=self.tokens["surface"]).pack(side="left")
+        sep = tk.Frame(parent, height=1, bg=self.tokens["border"])
+        sep.pack(fill="x", pady=(2, 10))
+
+    def build_segmented_row(self, parent, title, subtitle, options, current_val, callback):
+        row = tk.Frame(parent, bg=self.tokens["surface"])
+        row.pack(fill="x", pady=6)
+        
+        desc_frame = tk.Frame(row, bg=self.tokens["surface"])
+        desc_frame.pack(side="left", fill="both")
+        tk.Label(desc_frame, text=title, font=self.tokens["font_subtitle"], fg=self.tokens["text"], bg=self.tokens["surface"]).pack(anchor="w")
+        tk.Label(desc_frame, text=subtitle, font=self.tokens["font_body"], fg=self.tokens["text_dim"], bg=self.tokens["surface"]).pack(anchor="w")
+
+        btn_container = tk.Frame(row, bg=self.tokens["border"], bd=1)
+        btn_container.pack(side="right", anchor="center")
+
+        for opt in options:
+            active = (str(opt).lower() == str(current_val).lower())
+            bg = self.tokens["surface"] if not active else self.tokens["accent_soft"]
+            fg = self.tokens["text"] if not active else self.tokens["accent"]
+            
+            btn = tk.Button(btn_container, text=str(opt), font=self.tokens["font_body"], bg=bg, fg=fg,
+                            relief="flat", bd=0, padx=14, pady=6, cursor="hand2",
+                            command=lambda o=opt: callback(o))
+            btn.pack(side="left", padx=1)
+
+    def build_slider_row(self, parent, title, subtitle, min_v, max_v, current_val, callback):
+        row = tk.Frame(parent, bg=self.tokens["surface"])
+        row.pack(fill="x", pady=6)
+
+        desc_frame = tk.Frame(row, bg=self.tokens["surface"])
+        desc_frame.pack(side="left", fill="both")
+        tk.Label(desc_frame, text=title, font=self.tokens["font_subtitle"], fg=self.tokens["text"], bg=self.tokens["surface"]).pack(anchor="w")
+        tk.Label(desc_frame, text=subtitle, font=self.tokens["font_body"], fg=self.tokens["text_dim"], bg=self.tokens["surface"]).pack(anchor="w")
+
+        ctrl_frame = tk.Frame(row, bg=self.tokens["surface"])
+        ctrl_frame.pack(side="right", fill="y")
+
+        val_lbl = tk.Label(ctrl_frame, text=f"{current_val}px", font=self.tokens["font_mono"], fg=self.tokens["accent"], bg=self.tokens["surface"], width=6)
+        val_lbl.pack(side="right", padx=(10, 0))
+
+        slider = ttk.Scale(ctrl_frame, from_=min_v, to=max_v, value=current_val, command=callback, length=150)
+        slider.pack(side="right", anchor="center")
+
+    def build_accent_picker_row(self, parent):
+        row = tk.Frame(parent, bg=self.tokens["surface"])
+        row.pack(fill="x", pady=6)
+
+        desc_frame = tk.Frame(row, bg=self.tokens["surface"])
+        desc_frame.pack(side="left", fill="both")
+        tk.Label(desc_frame, text="Accent colour", font=self.tokens["font_subtitle"], fg=self.tokens["text"], bg=self.tokens["surface"]).pack(anchor="w")
+        tk.Label(desc_frame, text="Highlight colour used throughout the interface", font=self.tokens["font_body"], fg=self.tokens["text_dim"], bg=self.tokens["surface"]).pack(anchor="w")
+
+        picker_frame = tk.Frame(row, bg=self.tokens["surface"])
+        picker_frame.pack(side="right", anchor="center")
+
+        for color in self.accent_palette:
+            is_selected = (self.settings["accent"] == color["hex"])
+            border_color = self.tokens["text"] if is_selected else self.tokens["surface"]
+            
+            outer_ring = tk.Frame(picker_frame, bg=border_color, padding=2, bd=2 if is_selected else 0)
+            outer_ring.pack(side="left", padx=4)
+
+            btn = tk.Button(outer_ring, bg=color["hex"], width=3, height=1, relief="flat", cursor="hand2",
+                            command=lambda c=color["hex"]: self.update_setting("accent", c))
+            btn.pack()
+
+    def update_setting(self, key, value):
+        self.settings[key] = value
+        self.apply_theme_tokens()
+        self.create_widgets()
+
     def render_room_details_panel(self):
         for w in self.center_panel.winfo_children():
             w.destroy()
 
-        # Header Block
         header_block = tk.Frame(self.center_panel, bg=self.tokens["surface"])
         header_block.pack(fill="x", padx=30, pady=(25, 10))
 
@@ -255,20 +469,21 @@ class NexusReceptionMonitor:
         tk.Label(box, text="MONITOR STANDBY ACTIVE", font=("Rajdhani", 32, "bold"), bg="#05070a", fg="#3a4454").pack(pady=10)
         self.standby_clock = tk.Label(box, text="--:--:--", font=("Share Tech Mono", 56, "bold"), bg="#05070a", fg="#e8a020")
         self.standby_clock.pack(pady=5)
-        tk.Label(box, text="No motion detected in suite • Console operating in energy saving mode", font=("Inter", 12), bg="#05070a", fg="#5a6474").pack(pady=10)
+        tk.Label(box, text="Console operating in energy saving mode • Move mouse or type to awake", font=("Inter", 12), bg="#05070a", fg="#5a6474").pack(pady=10)
 
-    # ================= REFRESH AND ACTION LOGIC =================
     def change_suite(self, event=None):
         self.add_log("RECEPTION", f"Active monitoring viewport shifted to {self.selected_suite.get()}", "text")
-        self.update_display_values()
+        if self.view_mode == "details":
+            self.update_display_values()
 
     def select_room(self, room):
         self.active_room = room
         self.render_blueprint_rooms()
-        self.update_display_values()
+        if self.view_mode == "details":
+            self.update_display_values()
 
     def update_display_values(self):
-        if self.standby_mode: return
+        if self.standby_mode or self.view_mode == "settings": return
         
         suite = self.selected_suite.get()
         key = f"{suite} - {self.active_room}"
@@ -294,12 +509,29 @@ class NexusReceptionMonitor:
             lbl, unit = self.display_labels[key]
             lbl.config(text=f"{val} {unit}".strip())
 
-    def toggle_theme(self):
-        self.current_theme = "dark" if self.current_theme == "light" else "light"
-        self.apply_theme_tokens()
-        self.create_widgets()
+    def update_clock(self):
+        time_format = "%d/%m/%Y  "
+        if self.settings["clock_format"] == "24h":
+            time_format += "%H:%M"
+        else:
+            time_format += "%I:%M"
+            
+        if self.settings["show_seconds"]:
+            time_format += ":%S"
+            
+        if self.settings["clock_format"] == "12h":
+            time_format += " %p"
 
-    # ================= THREAD-SAFE QUEUE MANAGER =================
+        time_str = datetime.now().strftime(time_format)
+        
+        if not self.standby_mode:
+            if hasattr(self, 'clock_lbl'): self.clock_lbl.config(text=time_str)
+        else:
+            standby_fmt = "%H:%M:%S" if self.settings["show_seconds"] else "%H:%M"
+            if hasattr(self, 'standby_clock'): self.standby_clock.config(text=datetime.now().strftime(standby_fmt))
+            
+        self.root.after(1000, self.update_clock)
+
     def process_network_queue(self):
         while not self.event_queue.empty():
             item = self.event_queue.get()
@@ -308,11 +540,8 @@ class NexusReceptionMonitor:
             if evt_type == "LOG":
                 self.add_log(item[1], item[2], item[3])
             elif evt_type == "PROXIMITY":
-                should_standby = (item[1] == "sleep")
-                if should_standby != self.standby_mode:
-                    self.standby_mode = should_standby
-                    self.apply_theme_tokens()
-                    self.create_widgets()
+                if item[1] == "sleep" and not self.standby_mode:
+                    self.trigger_standby()
             elif evt_type == "STATE":
                 self.sync_with_server_state(item[1])
                 
@@ -339,21 +568,13 @@ class NexusReceptionMonitor:
             
         self.rooms_data[target_key]["curtainOpen"] = state.get("curtainOpen", False)
         
-        self.update_display_values()
+        if self.view_mode == "details":
+            self.update_display_values()
 
     def poll_network_loop(self):
         if NETWORK_AVAILABLE:
             self.sync_with_server_state(nc.get_state())
         self.root.after(UI_REFRESH_MS, self.poll_network_loop)
-
-    # ================= UTILS & CLOCK =================
-    def update_clock(self):
-        time_str = datetime.now().strftime("%d/%m/%Y  %H:%M:%S")
-        if not self.standby_mode:
-            if hasattr(self, 'clock_lbl'): self.clock_lbl.config(text=time_str)
-        else:
-            if hasattr(self, 'standby_clock'): self.standby_clock.config(text=datetime.now().strftime("%H:%M:%S"))
-        self.root.after(1000, self.update_clock)
 
     def add_log(self, src, msg, color_token):
         if self.standby_mode: return
