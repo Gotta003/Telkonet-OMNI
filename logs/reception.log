@@ -1,3 +1,4 @@
-19:08:15 [INFO] Network client started -> http://127.0.0.1:5000
-19:08:15 [INFO] Connected to bridge at http://127.0.0.1:5000
-19:08:15 [INFO] SSE stream connected
+Traceback (most recent call last):
+  File "/home/michael/Telkonet-OMNI/gui-reception/main.py", line 13, in <module>
+    from gui_reception import NexusReceptionMonitor
+ImportError: cannot import name 'NexusReceptionMonitor' from 'gui_reception' (/home/michael/Telkonet-OMNI/gui-reception/views/gui_reception.py). Did you mean: 'LuxuryReceptionMonitor'?
