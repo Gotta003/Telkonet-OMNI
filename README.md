@@ -63,6 +63,6 @@ npm run build
 ## 4. Run Application
 ```bash
 cd ~/Telkonet-OMNI
-source .omni__env/bin/activate
+source .omni_env/bin/activate
 python app.py
 ```
